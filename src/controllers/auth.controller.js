@@ -1,58 +1,79 @@
-import connection from "../db";
+import db from "../models/index.js";
 
-export async function login(req, res) {
-  req.body = req.body || {};
-  const { email, password } = req.body;
+const User = db.User;
+
+export const signIn = async (req, res) => {
+  console.log(req.body);
   try {
-    const [rows] = await connection.query(
-      "SELECT * FROM users WHERE email = ? AND password = ?",
-      [email, password]
-    );
-    if (rows.length > 0) {
-      const user = rows[0];
-      res.json({
-        message: "User logged",
-        data: user,
-      });
-    } else {
-      res.status(404).json({
-        message: "User not found",
+    const email = await User.findOne({
+      where: {
+        email: req.body.user,
+      },
+    });
+
+    const userName = await User.findOne({
+      where: {
+        userName: req.body.user,
+      },
+    });
+
+    if (!email && !userName) {
+      return res.status(404).json({
+        message: "Usuario no encontrado",
       });
     }
-  } catch (error) {
-    console.log("Unable to connect to the database:", error);
-  }
-}
 
-export async function register(req, res) {
-  req.body = req.body || {};
-  const { email, password, name, lastname } = req.body;
-  try {
-    const [rows] = await connection.query(
-      "SELECT * FROM users WHERE email = ?",
-      [email]
+    const user = email || userName;
+
+    const validPassword = await User.validatePassword(
+      req.body.password,
+      user.password
     );
-    if (rows.length > 0) {
-      res.status(404).json({
-        message: "User already exists",
-      });
-    } else {
-      const [rows] = await connection.query(
-        "INSERT INTO users (email, password, name, lastname) VALUES (?, ?, ?, ?)",
-        [email, password, name, lastname]
-      );
-      res.json({
-        message: "User created",
-        data: rows,
+
+    if (!validPassword) {
+      return res.status(401).json({
+        token: null,
+        message: "Contraseña incorrecta",
       });
     }
-  } catch (error) {
-    console.log("Unable to connect to the database:", error);
-  }
-}
+    const token = await User.generateToken(user, req.params.remember);
 
-export async function logout(req, res) {
-  res.json({
-    message: "User logout",
-  });
-}
+    res.json({
+      token,
+      user: {
+        id: user.id,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        phone: user.phone,
+        userName: user.userName,
+        rol: user.rol,
+        photo: user.photos || null,
+        createdAt: user.createdAt,
+        updatedAt: user.updatedAt,
+      },
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      message: "Error al iniciar sesión",
+      error: error,
+    });
+  }
+};
+
+// logout
+
+export const logout = async (req, res) => {
+  try {
+    res.json({
+      message: "Sesión cerrada",
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      message: "Error al cerrar sesión",
+      error: error,
+    });
+  }
+};
