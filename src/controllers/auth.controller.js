@@ -32,7 +32,6 @@ export const signIn = async (req, res) => {
 
     if (!validPassword) {
       return res.status(401).json({
-        token: null,
         message: "Contraseña incorrecta",
       });
     }
@@ -62,7 +61,27 @@ export const signIn = async (req, res) => {
   }
 };
 
-// logout
+export const profile = async (req, res) => {
+  try {
+    const user = await User.findByPk(req.userId, {
+      attributes: {
+        exclude: ["password"],
+      },
+    });
+    if (!user) {
+      return res.status(404).json({
+        message: "Usuario no encontrado",
+      });
+    }
+    res.json(user);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      message: "Error al obtener el usuario",
+      error: error,
+    });
+  }
+};
 
 export const logout = async (req, res) => {
   try {

@@ -1,3 +1,3 @@
-import { verifyToken } from "./verifySignup.js";
+import { verifyToken } from "./verifyToken.js";
 
 export { verifyToken };
