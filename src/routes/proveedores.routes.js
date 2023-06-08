@@ -5,7 +5,7 @@ import {
   getProveedorById,
   updateProveedorById,
   deleteProveedorById,
-  getProveedoresByStatus,
+  getProveedoresByParams,
 } from "../controllers/proveedores.controller.js";
 import { verifyToken } from "../middleware/index.js";
 
@@ -21,6 +21,6 @@ router.patch("/proveedores/:id", verifyToken, updateProveedorById);
 
 router.delete("/proveedores/:id", verifyToken, deleteProveedorById);
 
-router.get("/proveedores/status/:status", verifyToken, getProveedoresByStatus);
+router.post("/proveedores/search", verifyToken, getProveedoresByParams);
 
 export default router;

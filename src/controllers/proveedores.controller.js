@@ -1,4 +1,5 @@
 import db from "../models/index.js";
+import { Op } from "sequelize";
 
 const Proveedores = db.Proveedores;
 
@@ -79,8 +80,11 @@ export const deleteProveedorById = async (req, res) => {
         id: req.params.id,
       },
     });
+
+    const proveedores = await Proveedores.findAll();
     res.json({
       message: "Proveedor eliminado correctamente",
+      proveedores,
     });
   } catch (error) {
     console.log(error);
@@ -91,15 +95,58 @@ export const deleteProveedorById = async (req, res) => {
   }
 };
 
-export const getProveedoresByStatus = async (req, res) => {
+export const getProveedoresByParams = async (req, res) => {
+  const { search, status, page, quantityResults } = req.body;
+  const resultsPerPage = parseInt(quantityResults) || 5;
+
   try {
-    const proveedores = await Proveedores.findAll({
-      where: {
-        status: req.params.status,
-      },
+    let whereClause = {
+      [Op.or]: [
+        {
+          proveedor: {
+            [Op.like]: `%${search}%`,
+          },
+        },
+        {
+          encargado: {
+            [Op.like]: `%${search}%`,
+          },
+        },
+        {
+          email: {
+            [Op.like]: `%${search}%`,
+          },
+        },
+        {
+          phone: {
+            [Op.like]: `%${search}%`,
+          },
+        },
+        {
+          address: {
+            [Op.like]: `%${search}%`,
+          },
+        },
+      ],
+    };
+
+    if (status) {
+      whereClause = { ...whereClause, status: status };
+    }
+
+    const { count, rows } = await Proveedores.findAndCountAll({
+      where: whereClause,
+      limit: resultsPerPage,
+      offset: (page - 1) * resultsPerPage,
     });
+
+    const totalPages = Math.ceil(count / resultsPerPage);
+    const totalEntries = count;
+
     res.json({
-      proveedores,
+      proveedores: rows,
+      totalPages,
+      totalEntries,
     });
   } catch (error) {
     console.log(error);
