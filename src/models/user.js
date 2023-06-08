@@ -12,14 +12,18 @@ export default (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      User.belongsTo(models.Proveedores, {
+        foreignKey: "proveedorId",
+        as: "proveedor",
+      });
     }
   }
   User.init(
     {
       id: {
-        primaryKey: true,
         type: DataTypes.UUID,
         defaultValue: DataTypes.UUIDV4,
+        primaryKey: true,
       },
       firstName: {
         type: DataTypes.STRING,
@@ -54,6 +58,20 @@ export default (sequelize, DataTypes) => {
       photo: {
         type: DataTypes.TEXT,
         allowNull: true,
+      },
+      status: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: true,
+      },
+      proveedorId: {
+        type: DataTypes.UUID,
+        references: {
+          model: "Proveedores",
+          key: "id",
+        },
+        onUpdate: "CASCADE",
+        onDelete: "CASCADE",
       },
     },
     {

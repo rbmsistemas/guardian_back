@@ -1,6 +1,6 @@
 "use strict";
-const { Model } = require("sequelize");
-module.exports = (sequelize, DataTypes) => {
+import { Model } from "sequelize";
+export default (sequelize, DataTypes) => {
   class Proveedores extends Model {
     /**
      * Helper method for defining associations.
@@ -9,10 +9,19 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      Proveedores.hasMany(models.User, {
+        foreignKey: "proveedorId",
+        as: "users",
+      });
     }
   }
   Proveedores.init(
     {
+      id: {
+        type: DataTypes.UUID,
+        defaultValue: DataTypes.UUIDV4,
+        primaryKey: true,
+      },
       proveedor: {
         type: DataTypes.STRING,
         allowNull: false,
@@ -44,6 +53,10 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.BOOLEAN,
         allowNull: false,
         defaultValue: true,
+      },
+      comments: {
+        type: DataTypes.TEXT,
+        allowNull: true,
       },
     },
     {
