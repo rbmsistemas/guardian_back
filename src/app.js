@@ -10,7 +10,7 @@ const app = express();
 app.use(cors([process.env.FRONTEND_URL]));
 
 app.use(express.json());
-
+app.use("/uploads", express.static("uploads"));
 app.use("/api/auth", authRoutes);
 app.use("/api", pingRoutes);
 app.use("/api", proveedoresRoutes);

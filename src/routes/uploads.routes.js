@@ -1,6 +1,7 @@
 import { Router } from "express";
 import multer, { diskStorage } from "multer";
 import path from "path";
+import { v4 as uuidv4 } from "uuid";
 
 const router = Router();
 
@@ -10,7 +11,9 @@ const storage = diskStorage({
     cb(null, "uploads/proveedores/");
   },
   filename: function (req, file, cb) {
-    cb(null, file.originalname);
+    const ext = path.extname(file.originalname);
+    const filename = uuidv4() + ext;
+    cb(null, filename);
   },
 });
 
@@ -23,7 +26,7 @@ router.post("/provider", upload.single("image"), function (req, res) {
     return res.status(400).send("No se encontró ninguna imagen");
   }
 
-  // Construir la URL completa de la imagen
+  // Construir la URL completa de la imagen con el nuevo nombre
   const imageUrl = `${req.protocol}://${req.get("host")}/uploads/proveedores/${
     req.file.filename
   }`;
