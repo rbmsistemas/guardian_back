@@ -8,45 +8,68 @@ module.exports = {
       [
         {
           name: "Computadora",
+          createdAt: new Date(),
+          updatedAt: new Date(),
         },
         {
           name: "Teléfono",
+          createdAt: new Date(),
+          updatedAt: new Date(),
         },
         {
           name: "Impresora",
+          createdAt: new Date(),
+          updatedAt: new Date(),
         },
         {
           name: "Monitor",
+          createdAt: new Date(),
+          updatedAt: new Date(),
         },
         {
           name: "Teclado",
+          createdAt: new Date(),
+          updatedAt: new Date(),
         },
         {
           name: "Mouse",
+          createdAt: new Date(),
+          updatedAt: new Date(),
         },
         {
           name: "Pantalla",
+          createdAt: new Date(),
+          updatedAt: new Date(),
         },
         {
           name: "CTS",
+          createdAt: new Date(),
+          updatedAt: new Date(),
         },
         {
           name: "UPS",
+          createdAt: new Date(),
+          updatedAt: new Date(),
         },
         {
           name: "Router",
+          createdAt: new Date(),
+          updatedAt: new Date(),
         },
         {
           name: "Switch",
+          createdAt: new Date(),
+          updatedAt: new Date(),
         },
         {
           name: "Access Point",
+          createdAt: new Date(),
+          updatedAt: new Date(),
         },
         {
           name: "Servidor",
-        },
-        {
-          name: "Otro",
+          createdAt: new Date(),
+          updatedAt: new Date(),
         },
       ],
       {}
