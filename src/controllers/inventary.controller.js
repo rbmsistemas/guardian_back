@@ -1,9 +1,45 @@
 import db from "../models/index.js";
 
 const Inventary = db.Inventary;
+const InventaryType = db.InventaryTypes;
+const InventaryBrand = db.InventaryBrands;
+const InventaryModel = db.InventaryModels;
 
 export const createInventary = async (req, res) => {
   try {
+    console.log(req.body);
+    if (
+      req.body.inventaryTypeId == 0 &&
+      InventaryType.findOne({ where: { name: req.body.inventaryTypeId } }) ===
+        null
+    ) {
+      const inventaryType = await InventaryType.create({
+        name: req.body.inventaryTypeId,
+      });
+      req.body.inventaryTypeId = inventaryType.id;
+    }
+    if (
+      req.body.inventaryBrandId == 0 &&
+      InventaryBrand.findOne({ where: { name: req.body.inventaryBrandId } }) ===
+        null
+    ) {
+      const inventaryBrand = await InventaryBrand.create({
+        name: req.body.inventaryBrandId,
+        inventaryTypeId: req.body.inventaryTypeId,
+      });
+      req.body.inventaryBrandId = inventaryBrand.id;
+    }
+    if (
+      req.body.inventaryModelId == 0 &&
+      InventaryModel.findOne({ where: { name: req.body.inventaryModelId } }) ===
+        null
+    ) {
+      const inventaryModel = await InventaryModel.create({
+        name: req.body.inventaryModelId,
+        inventaryTypeId: req.body.inventaryTypeId,
+      });
+      req.body.inventaryModelId = inventaryModel.id;
+    }
     const inventary = await Inventary.create(req.body);
     res.json({
       message: "Inventario creado correctamente",

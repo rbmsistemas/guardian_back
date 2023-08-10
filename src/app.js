@@ -4,6 +4,7 @@ import authRoutes from "./routes/auth.routes.js";
 import pingRoutes from "./routes/ping.routes.js";
 import proveedoresRoutes from "./routes/proveedores.routes.js";
 import uploadsRoutes from "./routes/uploads.routes.js";
+import uploadsInventaryRoutes from "./routes/inventaryUploads.routes.js";
 import inventaryRoutes from "./routes/inventary.routes.js";
 import inventaryTypesRoutes from "./routes/inventaryTypes.routes.js";
 import inventaryBrands from "./routes/inventaryBrands.routes.js";
@@ -22,6 +23,7 @@ app.use("/api", inventaryRoutes);
 app.use("/api", inventaryTypesRoutes);
 app.use("/api", inventaryBrands);
 app.use("/api", inventaryModels);
+app.use("/api/uploadsInventary", uploadsInventaryRoutes);
 app.use("/api/uploads", uploadsRoutes);
 
 app.use((err, req, res, next) => {
