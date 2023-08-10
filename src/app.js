@@ -23,7 +23,7 @@ app.use("/api", inventaryRoutes);
 app.use("/api", inventaryTypesRoutes);
 app.use("/api", inventaryBrands);
 app.use("/api", inventaryModels);
-app.use("/api/uploadsInventary", uploadsInventaryRoutes);
+app.use("/api/uploads", uploadsInventaryRoutes);
 app.use("/api/uploads", uploadsRoutes);
 
 app.use((err, req, res, next) => {

@@ -7,39 +7,42 @@ const InventaryModel = db.InventaryModels;
 
 export const createInventary = async (req, res) => {
   try {
-    console.log(req.body);
     if (
-      req.body.inventaryTypeId == 0 &&
-      InventaryType.findOne({ where: { name: req.body.inventaryTypeId } }) ===
-        null
+      req.body.inventaryTypeId === "0" &&
+      (await InventaryType.findOne({
+        where: { name: req.body.otherInventary },
+      })) === null
     ) {
       const inventaryType = await InventaryType.create({
-        name: req.body.inventaryTypeId,
+        name: req.body.otherInventary,
       });
       req.body.inventaryTypeId = inventaryType.id;
     }
     if (
-      req.body.inventaryBrandId == 0 &&
-      InventaryBrand.findOne({ where: { name: req.body.inventaryBrandId } }) ===
-        null
+      req.body.inventaryBrandId === "0" &&
+      (await InventaryBrand.findOne({
+        where: { name: req.body.otherBrand },
+      })) === null
     ) {
       const inventaryBrand = await InventaryBrand.create({
-        name: req.body.inventaryBrandId,
+        name: req.body.otherBrand,
         inventaryTypeId: req.body.inventaryTypeId,
       });
       req.body.inventaryBrandId = inventaryBrand.id;
     }
     if (
-      req.body.inventaryModelId == 0 &&
-      InventaryModel.findOne({ where: { name: req.body.inventaryModelId } }) ===
-        null
+      req.body.inventaryModelId === "0" &&
+      (await InventaryModel.findOne({
+        where: { name: req.body.otherModel },
+      })) === null
     ) {
       const inventaryModel = await InventaryModel.create({
-        name: req.body.inventaryModelId,
+        name: req.body.otherModel,
         inventaryTypeId: req.body.inventaryTypeId,
       });
       req.body.inventaryModelId = inventaryModel.id;
     }
+
     const inventary = await Inventary.create(req.body);
     res.json({
       message: "Inventario creado correctamente",
