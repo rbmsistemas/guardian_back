@@ -40,10 +40,12 @@ module.exports = {
       serialNumber: {
         type: Sequelize.STRING,
         allowNull: false,
+        unique: true,
       },
       activo: {
         type: Sequelize.STRING,
         allowNull: false,
+        unique: true,
       },
       comments: {
         type: Sequelize.TEXT,
@@ -60,7 +62,7 @@ module.exports = {
       },
       images: {
         type: Sequelize.JSON,
-        allowNull: false,
+        allowNull: true,
       },
       altaDate: {
         allowNull: false,

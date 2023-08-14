@@ -16,7 +16,7 @@ router.get("/inventarys", verifyToken, getInventarys);
 router.get("/inventarys/:id", verifyToken, getInventaryById);
 router.get("/inventarys/type/:id", verifyToken, getInventaryByTypeId);
 router.post("/inventarys", verifyToken, createInventary);
-router.put("/inventarys/:id", verifyToken, updateInventaryById);
+router.patch("/inventarys/:id", verifyToken, updateInventaryById);
 router.delete("/inventarys/:id", verifyToken, deleteInventaryById);
 router.post("/inventarys/search", verifyToken, getInventariesByParams);
 

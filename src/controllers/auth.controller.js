@@ -1,6 +1,7 @@
 import db from "../models/index.js";
 
 const User = db.User;
+const Provider = db.Proveedores;
 
 export const signIn = async (req, res) => {
   console.log(req.body);
@@ -73,6 +74,12 @@ export const profile = async (req, res) => {
         message: "Usuario no encontrado",
       });
     }
+    // add provider data
+    if (user.proveedorId) {
+      const provider = await Provider.findByPk(user.proveedorId);
+      user.dataValues.provider = provider;
+    }
+
     res.json(user);
   } catch (error) {
     console.log(error);

@@ -50,10 +50,11 @@ export const createInventary = async (req, res) => {
       inventary,
     });
   } catch (error) {
+    // console.log(error.errors[0].message);
     console.log(error);
     res.status(500).json({
       message: "Error al crear el inventario",
-      error,
+      error: error.errors[0].message,
     });
   }
 };
@@ -81,8 +82,14 @@ export const updateInventaryById = async (req, res) => {
         id: req.params.id,
       },
     });
+
     res.json({
       message: "Inventario actualizado correctamente",
+      inventary: await Inventary.findOne({
+        where: {
+          id: req.params.id,
+        },
+      }),
     });
   } catch (error) {
     console.log(error);
