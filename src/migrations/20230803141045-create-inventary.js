@@ -46,16 +46,33 @@ module.exports = {
         allowNull: false,
       },
       comments: {
-        type: Sequelize.STRING,
+        type: Sequelize.TEXT,
         allowNull: false,
       },
       status: {
         type: Sequelize.BOOLEAN,
         allowNull: false,
       },
+      isAsigned: {
+        type: Sequelize.BOOLEAN,
+        allowNull: true,
+        defaultValue: false,
+      },
       images: {
         type: Sequelize.JSON,
         allowNull: false,
+      },
+      altaDate: {
+        allowNull: false,
+        type: Sequelize.DATE,
+      },
+      asignacionDate: {
+        allowNull: true,
+        type: Sequelize.DATE,
+      },
+      bajaDate: {
+        allowNull: true,
+        type: Sequelize.DATE,
       },
       createdAt: {
         allowNull: false,

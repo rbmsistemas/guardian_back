@@ -1,9 +1,10 @@
 import db from "../models/index.js";
+import { Op } from "sequelize";
 
 const Inventary = db.Inventary;
 const InventaryType = db.InventaryTypes;
 const InventaryBrand = db.InventaryBrands;
-const InventaryModel = db.InventaryModels;
+const InventaryModels = db.InventaryModels;
 
 export const createInventary = async (req, res) => {
   try {
@@ -32,11 +33,11 @@ export const createInventary = async (req, res) => {
     }
     if (
       req.body.inventaryModelId === "0" &&
-      (await InventaryModel.findOne({
+      (await InventaryModels.findOne({
         where: { name: req.body.otherModel },
       })) === null
     ) {
-      const inventaryModel = await InventaryModel.create({
+      const inventaryModel = await InventaryModels.create({
         name: req.body.otherModel,
         inventaryTypeId: req.body.inventaryTypeId,
       });
@@ -130,20 +131,69 @@ export const getInventaryById = async (req, res) => {
   }
 };
 
-export const getInventaryByModelId = async (req, res) => {
+export const getInventariesByParams = async (req, res) => {
+  const { search, brandType, inventaryType, status, page, quantityResults } =
+    req.body;
+  const resultsPerPage = parseInt(quantityResults) || 5;
+
   try {
-    const inventary = await Inventary.findAll({
-      where: {
-        inventaryModelId: req.params.id,
-      },
+    let whereClause = {
+      [Op.or]: [
+        {
+          "$inventaryModel.name$": {
+            [Op.like]: `%${search}%`,
+          },
+        },
+        {
+          serialNumber: {
+            [Op.like]: `%${search}%`,
+          },
+        },
+        {
+          activo: {
+            [Op.like]: `%${search}%`,
+          },
+        },
+      ],
+    };
+
+    if (status) {
+      whereClause = { ...whereClause, status: status };
+    }
+
+    if (brandType) {
+      whereClause = { ...whereClause, inventaryBrandId: brandType };
+    }
+
+    if (inventaryType) {
+      whereClause = { ...whereClause, inventaryTypeId: inventaryType };
+    }
+
+    const { count, rows } = await Inventary.findAndCountAll({
+      where: whereClause,
+      limit: resultsPerPage,
+      offset: (page - 1) * resultsPerPage,
+      order: [["updatedAt", "ASC"]],
+      include: [
+        {
+          model: InventaryModels,
+          as: "inventaryModel", // Nombre de la asociación en tu modelo Inventary
+        },
+      ],
     });
+
+    const totalPages = Math.ceil(count / resultsPerPage);
+    const totalEntries = count;
+
     res.json({
-      inventary,
+      inventaries: rows,
+      totalPages,
+      totalEntries,
     });
   } catch (error) {
     console.log(error);
     res.status(500).json({
-      message: "Error al obtener el inventario",
+      message: "Error al obtener los inventarios",
       error,
     });
   }

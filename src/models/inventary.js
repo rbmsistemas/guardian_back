@@ -63,7 +63,7 @@ export default (sequelize, DataTypes) => {
         allowNull: false,
       },
       comments: {
-        type: DataTypes.STRING,
+        type: DataTypes.TEXT,
         allowNull: false,
       },
       status: {
@@ -73,6 +73,24 @@ export default (sequelize, DataTypes) => {
       images: {
         type: DataTypes.JSON,
         allowNull: false,
+      },
+      altaDate: {
+        allowNull: false,
+        type: DataTypes.DATE,
+        defaultValue: DataTypes.NOW,
+      },
+      asignacionDate: {
+        allowNull: true,
+        type: DataTypes.DATE,
+      },
+      isAsigned: {
+        type: DataTypes.BOOLEAN,
+        allowNull: true,
+        defaultValue: false,
+      },
+      bajaDate: {
+        allowNull: true,
+        type: DataTypes.DATE,
       },
     },
     {
