@@ -59,6 +59,44 @@ export const createInventary = async (req, res) => {
   }
 };
 
+export const getValidateActivoSN = async (req, res) => {
+  const { activo, serialNumber, currentId } = req.body;
+  try {
+    const inventary = await Inventary.findOne({
+      where: {
+        [Op.and]: [
+          {
+            [Op.or]: [{ activo: activo }, { serialNumber: serialNumber }],
+          },
+          {
+            id: {
+              [Op.not]: currentId,
+            },
+          },
+        ],
+      },
+    });
+
+    if (inventary) {
+      res.json({
+        message: "Activo o Serial Number ya existe",
+        status: false,
+      });
+    } else {
+      res.json({
+        message: "Activo o Serial Number no existe",
+        status: true,
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      message: "Error al obtener el inventario",
+      error,
+    });
+  }
+};
+
 export const getInventarys = async (req, res) => {
   try {
     const inventarys = await Inventary.findAll();
