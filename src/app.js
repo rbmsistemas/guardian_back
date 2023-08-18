@@ -12,7 +12,7 @@ import inventaryModels from "./routes/inventaryModels.routes.js";
 
 const app = express();
 
-app.use(cors([process.env.FRONTEND_URL, "https://sibane.sytes.net"]));
+app.use(cors([process.env.FRONTEND_URL]));
 
 app.use(express.json());
 app.use("/uploads", express.static("uploads"));
