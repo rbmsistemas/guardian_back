@@ -27,9 +27,7 @@ router.post("/inventary", upload.single("image"), function (req, res) {
   }
 
   // Construir la URL completa de la imagen con el nuevo nombre
-  const imageUrl = `${req.protocol}://${req.get("host")}/uploads/inventaries/${
-    req.file.filename
-  }`;
+  const imageUrl = `/uploads/inventaries/${req.file.filename}`;
 
   // Devolver la URL de la imagen en la respuesta
   res.send(imageUrl);
