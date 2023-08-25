@@ -99,7 +99,15 @@ export const getValidateActivoSN = async (req, res) => {
 
 export const getInventarys = async (req, res) => {
   try {
-    const inventarys = await Inventary.findAll();
+    const inventarys = await Inventary.findAll({
+      include: [
+        {
+          model: InventaryModels,
+          as: "inventaryModel",
+        },
+      ],
+      order: [["updatedAt", "ASC"]],
+    });
     res.json({
       inventarys,
     });
@@ -222,7 +230,7 @@ export const getInventariesByParams = async (req, res) => {
       include: [
         {
           model: InventaryModels,
-          as: "inventaryModel", // Nombre de la asociación en tu modelo Inventary
+          as: "inventaryModel",
         },
       ],
     });
