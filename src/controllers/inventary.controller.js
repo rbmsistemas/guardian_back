@@ -66,7 +66,7 @@ export const getValidateActivoSN = async (req, res) => {
       where: {
         [Op.and]: [
           {
-            [Op.or]: [{ serialNumber: serialNumber }],
+            [Op.or]: [{ activo: activo }, { serialNumber: serialNumber }],
           },
           {
             id: {
