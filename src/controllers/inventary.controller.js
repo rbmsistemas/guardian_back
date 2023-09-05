@@ -59,14 +59,14 @@ export const createInventary = async (req, res) => {
   }
 };
 
-export const getValidateActivoSN = async (req, res) => {
-  const { activo, serialNumber, currentId } = req.body;
+export const getValidateSerialNumber = async (req, res) => {
+  const { serialNumber, currentId } = req.body;
   try {
     const inventary = await Inventary.findOne({
       where: {
         [Op.and]: [
           {
-            [Op.or]: [{ activo: activo }, { serialNumber: serialNumber }],
+            serialNumber: serialNumber,
           },
           {
             id: {
@@ -79,12 +79,49 @@ export const getValidateActivoSN = async (req, res) => {
 
     if (inventary) {
       res.json({
-        message: "Activo o Serial Number ya existe",
+        message: "Serial Number ya existe",
         status: false,
       });
     } else {
       res.json({
-        message: "Activo o Serial Number no existe",
+        message: "Serial Number no existe",
+        status: true,
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      message: "Error al obtener el inventario",
+      error,
+    });
+  }
+};
+export const getValidateActivo = async (req, res) => {
+  const { activo, currentId } = req.body;
+  try {
+    const inventary = await Inventary.findOne({
+      where: {
+        [Op.and]: [
+          {
+            activo: activo,
+          },
+          {
+            id: {
+              [Op.not]: currentId,
+            },
+          },
+        ],
+      },
+    });
+
+    if (inventary) {
+      res.json({
+        message: "Número Activo ya existe",
+        status: false,
+      });
+    } else {
+      res.json({
+        message: "Número de Activo no existe",
         status: true,
       });
     }

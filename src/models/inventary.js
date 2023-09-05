@@ -56,13 +56,13 @@ export default (sequelize, DataTypes) => {
       },
       serialNumber: {
         type: DataTypes.STRING,
-        allowNull: false,
-        unique: true,
+        allowNull: true,
+        unique: false,
       },
       activo: {
         type: DataTypes.STRING,
-        allowNull: false,
-        unique: true,
+        allowNull: true,
+        unique: false,
       },
       comments: {
         type: DataTypes.TEXT,
