@@ -9,9 +9,9 @@ module.exports = {
      * Example:
      * await queryInterface.createTable('users', { id: Sequelize.INTEGER });
      */
-    // await queryInterface.sequelize.query(
-    //   "ALTER TABLE Inventaries DROP CONSTRAINT serialNumber"
-    // );
+    await queryInterface.sequelize.query(
+      "ALTER TABLE Inventaries DROP CONSTRAINT serialNumber"
+    );
     await queryInterface.sequelize.query(
       "ALTER TABLE Inventaries DROP CONSTRAINT activo"
     );
