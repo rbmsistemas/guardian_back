@@ -6,79 +6,70 @@ const Sequelize = require("sequelize");
 // Define the migration functions using CommonJS syntax
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable("Inventaries", {
+    await queryInterface.createTable("Inventory", {
       id: {
         type: Sequelize.UUID,
         allowNull: false,
         primaryKey: true,
         defaultValue: Sequelize.UUIDV4,
       },
-      inventaryTypeId: {
-        type: Sequelize.INTEGER,
+      userId: {
+        type: Sequelize.UUID,
         allowNull: false,
         references: {
-          model: "InventaryTypes",
+          model: "User",
           key: "id",
         },
       },
-      inventaryBrandId: {
+      inventoryModelId: {
         type: Sequelize.INTEGER,
         allowNull: false,
         references: {
-          model: "InventaryBrands",
-          key: "id",
-        },
-      },
-      inventaryModelId: {
-        type: Sequelize.INTEGER,
-        allowNull: false,
-        references: {
-          model: "InventaryModels",
+          model: "InventoryModel",
           key: "id",
         },
       },
       serialNumber: {
         type: Sequelize.STRING,
-        allowNull: false,
-        unique: true,
+        allowNull: true,
+        unique: false,
       },
       activo: {
         type: Sequelize.STRING,
-        allowNull: false,
-        unique: true,
+        allowNull: true,
+        unique: false,
       },
       comments: {
         type: Sequelize.TEXT,
-        allowNull: false,
+        allowNull: true,
       },
       status: {
         type: Sequelize.BOOLEAN,
         allowNull: false,
-      },
-      isAsigned: {
-        type: Sequelize.BOOLEAN,
-        allowNull: true,
-        defaultValue: false,
       },
       images: {
         type: Sequelize.JSON,
         allowNull: true,
       },
       altaDate: {
+        type: Sequelize.DATE,
         allowNull: false,
-        type: Sequelize.DATE,
-      },
-      asignacionDate: {
-        allowNull: true,
-        type: Sequelize.DATE,
       },
       bajaDate: {
+        type: Sequelize.DATE,
+        allowNull: true,
+      },
+      recepcionDate: {
         allowNull: true,
         type: Sequelize.DATE,
       },
+      createdBy: {
+        type: Sequelize.STRING,
+        allowNull: true,
+      },
       createdAt: {
-        allowNull: false,
         type: Sequelize.DATE,
+        allowNull: false,
       },
       updatedAt: {
         allowNull: false,
@@ -87,6 +78,6 @@ module.exports = {
     });
   },
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable("Inventaries");
+    await queryInterface.dropTable("Inventory");
   },
 };

@@ -1,24 +1,28 @@
 "use strict";
 import { Model } from "sequelize";
 export default (sequelize, DataTypes) => {
-  class InventaryModels extends Model {
+  class InventoryType extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      InventaryModels.belongsTo(models.InventaryTypes, {
-        foreignKey: "inventaryTypeId",
-        as: "inventaryType",
+      InventoryType.hasMany(models.InventoryBrand, {
+        foreignKey: "inventoryTypeId",
+        as: "inventoryBrands",
       });
-      InventaryModels.hasMany(models.Inventary, {
-        foreignKey: "inventaryModelId",
-        as: "inventary",
+      InventoryType.hasMany(models.Inventory, {
+        foreignKey: "inventoryTypeId",
+        as: "inventory",
+      });
+      InventoryType.hasMany(models.InventoryModel, {
+        foreignKey: "inventoryTypeId",
+        as: "inventoryModel",
       });
     }
   }
-  InventaryModels.init(
+  InventoryType.init(
     {
       id: {
         type: DataTypes.INTEGER,
@@ -30,19 +34,12 @@ export default (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         allowNull: false,
       },
-      inventaryTypeId: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        references: {
-          model: "InventaryTypes",
-          key: "id",
-        },
-      },
     },
     {
       sequelize,
-      modelName: "InventaryModels",
+      modelName: "InventoryType",
+      tableName: "InventoryType",
     }
   );
-  return InventaryModels;
+  return InventoryType;
 };

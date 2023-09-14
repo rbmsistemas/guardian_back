@@ -80,10 +80,10 @@ export const deleteCompanyById = async (req, res) => {
       },
     });
 
-    const proveedores = await Company.findAll();
+    const companies = await Company.findAll();
     res.json({
       message: "Compañia eliminada correctamente",
-      proveedores,
+      companies,
     });
   } catch (error) {
     console.log(error);

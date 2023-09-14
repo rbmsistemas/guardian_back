@@ -22,11 +22,11 @@ export default (sequelize, DataTypes) => {
         defaultValue: DataTypes.UUIDV4,
         primaryKey: true,
       },
-      proveedor: {
+      name: {
         type: DataTypes.STRING,
         allowNull: false,
       },
-      encargado: {
+      manager: {
         type: DataTypes.STRING,
         allowNull: false,
       },

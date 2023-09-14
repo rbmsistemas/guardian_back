@@ -6,7 +6,7 @@ const Sequelize = require("sequelize");
 // Define the migration functions using CommonJS syntax
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable("InventaryBrands", {
+    await queryInterface.createTable("InventoryModel", {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -16,11 +16,19 @@ module.exports = {
       name: {
         type: Sequelize.STRING,
       },
-      inventaryTypeId: {
+      inventoryBrandId: {
         type: Sequelize.INTEGER,
         allowNull: false,
         references: {
-          model: "InventaryTypes",
+          model: "InventoryBrand",
+          key: "id",
+        },
+      },
+      inventoryTypeId: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+          model: "InventoryType",
           key: "id",
         },
       },
@@ -35,6 +43,6 @@ module.exports = {
     });
   },
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable("InventaryBrands");
+    await queryInterface.dropTable("InventoryModel");
   },
 };

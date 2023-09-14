@@ -4,11 +4,11 @@ import authRoutes from "./routes/auth.routes.js";
 import pingRoutes from "./routes/ping.routes.js";
 import companyRoutes from "./routes/company.routes.js";
 import uploadsRoutes from "./routes/uploads.routes.js";
-import uploadsInventaryRoutes from "./routes/inventaryUploads.routes.js";
-import inventaryRoutes from "./routes/inventary.routes.js";
-import inventaryTypesRoutes from "./routes/inventaryTypes.routes.js";
-import inventaryBrands from "./routes/inventaryBrands.routes.js";
-import inventaryModels from "./routes/inventaryModels.routes.js";
+import uploadsInventoryRoutes from "./routes/inventoryUploads.routes.js";
+import inventoryRoutes from "./routes/inventory.routes.js";
+import inventoryTypeRoutes from "./routes/inventoryType.routes.js";
+import inventoryBrand from "./routes/inventoryBrand.routes.js";
+import inventoryModel from "./routes/inventoryModel.routes.js";
 
 const app = express();
 
@@ -19,11 +19,11 @@ app.use("/uploads", express.static("uploads"));
 app.use("/api/auth", authRoutes);
 app.use("/api", pingRoutes);
 app.use("/api", companyRoutes);
-app.use("/api", inventaryRoutes);
-app.use("/api", inventaryTypesRoutes);
-app.use("/api", inventaryBrands);
-app.use("/api", inventaryModels);
-app.use("/api/uploads", uploadsInventaryRoutes);
+app.use("/api", inventoryRoutes);
+app.use("/api", inventoryTypeRoutes);
+app.use("/api", inventoryBrand);
+app.use("/api", inventoryModel);
+app.use("/api/uploads", uploadsInventoryRoutes);
 app.use("/api/uploads", uploadsRoutes);
 
 app.use((err, req, res, next) => {

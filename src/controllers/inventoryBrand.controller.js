@@ -1,12 +1,12 @@
 import db from "../models/index.js";
 
-const InventaryBrands = db.InventaryBrands;
+const InventoryBrand = db.InventoryBrand;
 
-export const getInventaryBrands = async (req, res) => {
+export const getInventoryBrands = async (req, res) => {
   try {
-    const inventaryBrands = await InventaryBrands.findAll();
+    const inventoryBrands = await InventoryBrand.findAll();
     res.json({
-      inventaryBrands,
+      inventoryBrands,
     });
   } catch (error) {
     console.log(error);

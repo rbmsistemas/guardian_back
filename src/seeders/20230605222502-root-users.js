@@ -10,16 +10,16 @@ const encryptPassword = async function (password) {
 module.exports = {
   async up(queryInterface, Sequelize) {
     await queryInterface.bulkInsert(
-      "Proveedores",
+      "Company",
       [
         {
           id: "00000000-0000-0000-0000-000000000000",
-          proveedor: "Aeropuerto Internacional de Puerto Vallarta",
-          encargado: "Jose Luis Lopez Martinez",
+          name: "Aeropuerto Internacional de Puerto Vallarta",
           email: "jlopezm@aeropuertosgap.com.mx",
           phone: "0000000000",
-          address: "",
+          manager: "Jose Luis Lopez Martinez",
           logo: "",
+          comments: "",
           status: true,
           createdAt: new Date(),
           updatedAt: new Date(),
@@ -29,7 +29,7 @@ module.exports = {
     );
 
     await queryInterface.bulkInsert(
-      "Users",
+      "User",
       [
         {
           id: "00000000-0000-0000-0000-000000000000",
@@ -41,7 +41,7 @@ module.exports = {
           rol: 1,
           phone: "0000000000",
           photo: "",
-          proveedorId: "00000000-0000-0000-0000-000000000000",
+          companyId: "00000000-0000-0000-0000-000000000000",
           status: true,
           createdAt: new Date(),
           updatedAt: new Date(),
@@ -56,7 +56,7 @@ module.exports = {
           userName: "jlopezm",
           rol: 2,
           photo: "",
-          proveedorId: "00000000-0000-0000-0000-000000000000",
+          companyId: "00000000-0000-0000-0000-000000000000",
           status: true,
           createdAt: new Date(),
           updatedAt: new Date(),
@@ -71,7 +71,7 @@ module.exports = {
           userName: "jbahena",
           rol: 2,
           photo: "",
-          proveedorId: "00000000-0000-0000-0000-000000000000",
+          companyId: "00000000-0000-0000-0000-000000000000",
           status: true,
           createdAt: new Date(),
           updatedAt: new Date(),
@@ -86,7 +86,7 @@ module.exports = {
           userName: "rbelloso",
           rol: 2,
           photo: "",
-          proveedorId: "00000000-0000-0000-0000-000000000000",
+          companyId: "00000000-0000-0000-0000-000000000000",
           status: true,
           createdAt: new Date(),
           updatedAt: new Date(),
@@ -101,7 +101,7 @@ module.exports = {
           userName: "ecisneros",
           rol: 2,
           photo: "",
-          proveedorId: "00000000-0000-0000-0000-000000000000",
+          companyId: "00000000-0000-0000-0000-000000000000",
           status: true,
           createdAt: new Date(),
           updatedAt: new Date(),
@@ -112,7 +112,7 @@ module.exports = {
   },
 
   async down(queryInterface, Sequelize) {
-    await queryInterface.bulkDelete("Users", null, {});
-    await queryInterface.bulkDelete("Proveedores", null, {});
+    await queryInterface.bulkDelete("User", null, {});
+    await queryInterface.bulkDelete("Company", null, {});
   },
 };

@@ -20,14 +20,14 @@ const storage = diskStorage({
 const upload = multer({ storage: storage });
 
 // Ruta para la carga de archivos
-router.post("/inventary", upload.single("image"), function (req, res) {
+router.post("/inventory", upload.single("image"), function (req, res) {
   // Verificar si se recibió un archivo de imagen
   if (!req.file) {
     return res.status(400).send("No se encontró ninguna imagen");
   }
 
   // Construir la URL completa de la imagen con el nuevo nombre
-  const imageUrl = `/uploads/inventaries/${req.file.filename}`;
+  const imageUrl = `/uploads/inventories/${req.file.filename}`;
 
   // Devolver la URL de la imagen en la respuesta
   res.send(imageUrl);

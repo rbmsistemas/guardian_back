@@ -1,28 +1,25 @@
 "use strict";
 import { Model } from "sequelize";
 export default (sequelize, DataTypes) => {
-  class Inventary extends Model {
+  class Inventory extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      Inventary.belongsTo(models.InventaryTypes, {
-        foreignKey: "inventaryTypeId",
-        as: "inventaryType",
+      Inventory.belongsTo(models.InventoryModel, {
+        foreignKey: "inventoryModelId",
+        as: "inventoryModel",
       });
-      Inventary.belongsTo(models.InventaryBrands, {
-        foreignKey: "inventaryBrandId",
-        as: "inventaryBrand",
-      });
-      Inventary.belongsTo(models.InventaryModels, {
-        foreignKey: "inventaryModelId",
-        as: "inventaryModel",
+      Inventory.belongsTo(models.User, {
+        foreignKey: "userId",
+        as: "user",
       });
     }
   }
-  Inventary.init(
+
+  Inventory.init(
     {
       id: {
         type: DataTypes.UUID,
@@ -30,29 +27,25 @@ export default (sequelize, DataTypes) => {
         primaryKey: true,
         defaultValue: DataTypes.UUIDV4,
       },
-      inventaryTypeId: {
-        type: DataTypes.INTEGER,
+      userId: {
+        type: DataTypes.UUID,
         allowNull: false,
         references: {
-          model: "InventaryTypes",
+          model: "User",
           key: "id",
         },
+        onDelete: "CASCADE",
+        onUpdate: "CASCADE",
       },
-      inventaryBrandId: {
+      inventoryModelId: {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
-          model: "InventaryBrands",
+          model: "InventoryModel",
           key: "id",
         },
-      },
-      inventaryModelId: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        references: {
-          model: "InventaryModels",
-          key: "id",
-        },
+        onDelete: "CASCADE",
+        onUpdate: "CASCADE",
       },
       serialNumber: {
         type: DataTypes.STRING,
@@ -66,7 +59,7 @@ export default (sequelize, DataTypes) => {
       },
       comments: {
         type: DataTypes.TEXT,
-        allowNull: false,
+        allowNull: true,
       },
       status: {
         type: DataTypes.BOOLEAN,
@@ -74,31 +67,31 @@ export default (sequelize, DataTypes) => {
       },
       images: {
         type: DataTypes.JSON,
-        allowNull: false,
+        allowNull: true,
       },
       altaDate: {
+        type: DataTypes.DATE,
         allowNull: false,
-        type: DataTypes.DATE,
         defaultValue: DataTypes.NOW,
-      },
-      asignacionDate: {
-        allowNull: true,
-        type: DataTypes.DATE,
-      },
-      isAsigned: {
-        type: DataTypes.BOOLEAN,
-        allowNull: true,
-        defaultValue: false,
       },
       bajaDate: {
         allowNull: true,
         type: DataTypes.DATE,
       },
+      recepcionDate: {
+        allowNull: true,
+        type: DataTypes.DATE,
+      },
+      createdBy: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
     },
     {
       sequelize,
-      modelName: "Inventary",
+      modelName: "Inventory",
+      tableName: "Inventory",
     }
   );
-  return Inventary;
+  return Inventory;
 };
