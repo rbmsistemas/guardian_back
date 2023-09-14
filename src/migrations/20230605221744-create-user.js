@@ -7,7 +7,7 @@ const { DataTypes } = require("sequelize");
 // Define the migration functions using CommonJS syntax
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable("Users", {
+    await queryInterface.createTable("User", {
       id: {
         allowNull: false,
         primaryKey: true,
@@ -40,10 +40,10 @@ module.exports = {
       status: {
         type: DataTypes.BOOLEAN,
       },
-      proveedorId: {
+      companyId: {
         type: DataTypes.UUID,
         references: {
-          model: "Proveedores",
+          model: "Company",
           key: "id",
         },
         onUpdate: "CASCADE",
@@ -60,6 +60,6 @@ module.exports = {
     });
   },
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable("Users");
+    await queryInterface.dropTable("User");
   },
 };

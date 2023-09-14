@@ -12,9 +12,9 @@ export default (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      User.belongsTo(models.Proveedores, {
-        foreignKey: "proveedorId",
-        as: "proveedor",
+      User.belongsTo(models.Company, {
+        foreignKey: "companyId",
+        as: "company",
       });
     }
   }
@@ -64,10 +64,10 @@ export default (sequelize, DataTypes) => {
         allowNull: false,
         defaultValue: true,
       },
-      proveedorId: {
+      companyId: {
         type: DataTypes.UUID,
         references: {
-          model: "Proveedores",
+          model: "Company",
           key: "id",
         },
         onUpdate: "CASCADE",
@@ -77,7 +77,7 @@ export default (sequelize, DataTypes) => {
     {
       sequelize,
       modelName: "User",
-      tableName: "Users",
+      tableName: "User",
     }
   );
   User.encryptPassword = async function (password) {

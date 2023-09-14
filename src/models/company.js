@@ -1,7 +1,7 @@
 "use strict";
 import { Model } from "sequelize";
 export default (sequelize, DataTypes) => {
-  class Proveedores extends Model {
+  class Company extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -9,13 +9,13 @@ export default (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      Proveedores.hasMany(models.User, {
-        foreignKey: "proveedorId",
+      Company.hasMany(models.User, {
+        foreignKey: "companyId",
         as: "users",
       });
     }
   }
-  Proveedores.init(
+  Company.init(
     {
       id: {
         type: DataTypes.UUID,
@@ -41,10 +41,6 @@ export default (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         allowNull: false,
       },
-      address: {
-        type: DataTypes.STRING,
-        allowNull: true,
-      },
       logo: {
         type: DataTypes.TEXT,
         allowNull: true,
@@ -61,8 +57,9 @@ export default (sequelize, DataTypes) => {
     },
     {
       sequelize,
-      modelName: "Proveedores",
+      modelName: "Company",
+      tableName: "Company",
     }
   );
-  return Proveedores;
+  return Company;
 };

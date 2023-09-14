@@ -1,21 +1,32 @@
 import db from "../models/index.js";
 
 const User = db.User;
-const Provider = db.Proveedores;
+const Company = db.Company;
 
 export const signIn = async (req, res) => {
-  console.log(req.body);
   try {
     const email = await User.findOne({
       where: {
         email: req.body.user,
       },
+      include: [
+        {
+          model: Company,
+          as: "company",
+        },
+      ],
     });
 
     const userName = await User.findOne({
       where: {
         userName: req.body.user,
       },
+      include: [
+        {
+          model: Company,
+          as: "company",
+        },
+      ],
     });
 
     if (!email && !userName) {
@@ -51,6 +62,8 @@ export const signIn = async (req, res) => {
         photo: user.photos || null,
         createdAt: user.createdAt,
         updatedAt: user.updatedAt,
+        status: user.status,
+        company: user.company,
       },
     });
   } catch (error) {
@@ -68,17 +81,24 @@ export const profile = async (req, res) => {
       attributes: {
         exclude: ["password"],
       },
+      include: [
+        {
+          model: Company,
+          as: "company",
+        },
+      ],
     });
+
     if (!user) {
       return res.status(404).json({
         message: "Usuario no encontrado",
       });
     }
-    // add provider data
-    if (user.proveedorId) {
-      const provider = await Provider.findByPk(user.proveedorId);
-      user.dataValues.provider = provider;
-    }
+
+    // if (user.companyId) {
+    //   const provider = await Provider.findByPk(user.companyId);
+    //   user.dataValues.provider = provider;
+    // }
 
     res.json(user);
   } catch (error) {

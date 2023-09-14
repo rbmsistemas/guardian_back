@@ -7,16 +7,13 @@ const { DataTypes } = require("sequelize");
 // Define the migration functions using CommonJS syntax
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable("Proveedores", {
+    await queryInterface.createTable("Company", {
       id: {
         allowNull: false,
         primaryKey: true,
-        type: DataTypes.UUID, // Use DataTypes instead of Sequelize
+        type: DataTypes.UUID,
       },
-      proveedor: {
-        type: DataTypes.STRING,
-      },
-      encargado: {
+      name: {
         type: DataTypes.STRING,
       },
       email: {
@@ -25,7 +22,7 @@ module.exports = {
       phone: {
         type: DataTypes.STRING,
       },
-      address: {
+      manager: {
         type: DataTypes.STRING,
       },
       logo: {
@@ -48,6 +45,6 @@ module.exports = {
     });
   },
   down: async (queryInterface, Sequelize) => {
-    await queryInterface.dropTable("Proveedores");
+    await queryInterface.dropTable("Company");
   },
 };
