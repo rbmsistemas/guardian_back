@@ -8,9 +8,9 @@ export default (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      InventoryBrand.hasMany(models.Inventory, {
+      InventoryBrand.hasMany(models.InventoryModel, {
         foreignKey: "inventoryBrandId",
-        as: "inventory",
+        as: "inventoryBrand",
       });
     }
   }

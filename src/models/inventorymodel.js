@@ -17,8 +17,8 @@ export default (sequelize, DataTypes) => {
         as: "inventoryBrand",
       });
       InventoryModel.hasMany(models.Inventory, {
-        foreignKey: "inventoryId",
-        as: "inventory",
+        foreignKey: "inventoryModelId",
+        as: "inventoryModel",
       });
     }
   }

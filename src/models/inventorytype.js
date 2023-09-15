@@ -8,14 +8,6 @@ export default (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      InventoryType.hasMany(models.InventoryBrand, {
-        foreignKey: "inventoryTypeId",
-        as: "inventoryBrands",
-      });
-      InventoryType.hasMany(models.Inventory, {
-        foreignKey: "inventoryTypeId",
-        as: "inventory",
-      });
       InventoryType.hasMany(models.InventoryModel, {
         foreignKey: "inventoryTypeId",
         as: "inventoryModel",

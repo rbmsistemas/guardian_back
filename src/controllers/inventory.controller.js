@@ -30,11 +30,11 @@ export const createInventory = async (req, res) => {
       if (
         req.body.inventoryTypeId === "0" &&
         (await InventoryType.findOne({
-          where: { name: req.body.otherInventory },
+          where: { name: req.body.otherType },
         })) === null
       ) {
         const inventoryType = await InventoryType.create({
-          name: req.body.otherInventory,
+          name: req.body.otherType,
         });
         req.body.inventoryTypeId = inventoryType.id;
       }
@@ -335,7 +335,7 @@ export const getInventoriesByParams = async (req, res) => {
       order: [["updatedAt", "ASC"]],
       include: [
         {
-          model: InventoryModels,
+          model: InventoryModel,
           as: "inventoryModel",
         },
       ],

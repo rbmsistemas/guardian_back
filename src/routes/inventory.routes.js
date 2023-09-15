@@ -22,10 +22,10 @@ router.post(
   verifyToken,
   getValidateSerialNumber
 );
-router.post("/inventaries/validateActivo", verifyToken, getValidateActivo);
-router.post("/inventaries", verifyToken, createInventory);
-router.patch("/inventaries/:id", verifyToken, updateInventoryById);
-router.delete("/inventaries/:id", verifyToken, deleteInventoryById);
-router.post("/inventaries/search", verifyToken, getInventoriesByParams);
+router.post("/inventories/validateActivo", verifyToken, getValidateActivo);
+router.post("/inventories", verifyToken, createInventory);
+router.patch("/inventories/:id", verifyToken, updateInventoryById);
+router.delete("/inventories/:id", verifyToken, deleteInventoryById);
+router.post("/inventories/search", verifyToken, getInventoriesByParams);
 
 export default router;
