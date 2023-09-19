@@ -34,6 +34,11 @@ export default (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         allowNull: false,
       },
+      images: {
+        type: DataTypes.ARRAY(DataTypes.STRING),
+        allowNull: true,
+        defaultValue: [],
+      },
       inventoryBrandId: {
         type: DataTypes.INTEGER,
         allowNull: false,

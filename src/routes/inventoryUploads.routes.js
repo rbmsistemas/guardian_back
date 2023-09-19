@@ -8,7 +8,7 @@ const router = Router();
 // Configurar multer
 const storage = diskStorage({
   destination: function (req, file, cb) {
-    cb(null, "uploads/inventaries/");
+    cb(null, "uploads/inventories/");
   },
   filename: function (req, file, cb) {
     const ext = path.extname(file.originalname);

@@ -8,6 +8,6 @@ router.post("/login", signIn);
 
 router.get("/profile", verifyToken, profile);
 
-router.post("/logout", logout);
+router.post("/signout", logout);
 
 export default router;

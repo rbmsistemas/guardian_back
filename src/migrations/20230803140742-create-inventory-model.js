@@ -16,6 +16,10 @@ module.exports = {
       name: {
         type: Sequelize.STRING,
       },
+      images: {
+        type: Sequelize.JSON,
+        allowNull: true,
+      },
       inventoryBrandId: {
         type: Sequelize.INTEGER,
         allowNull: false,

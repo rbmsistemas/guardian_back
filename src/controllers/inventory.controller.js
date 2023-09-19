@@ -8,6 +8,7 @@ const InventoryModel = db.InventoryModel;
 
 export const createInventory = async (req, res) => {
   try {
+    console.log(req.body);
     if (
       req.body.inventoryModelId === "0" &&
       (await InventoryModel.findOne({
@@ -22,7 +23,6 @@ export const createInventory = async (req, res) => {
       ) {
         const inventoryBrand = await InventoryBrand.create({
           name: req.body.otherBrand,
-          inventoryTypeId: req.body.inventoryTypeId,
         });
         req.body.inventoryBrandId = inventoryBrand.id;
       }
@@ -41,6 +41,7 @@ export const createInventory = async (req, res) => {
 
       const inventoryModel = await InventoryModel.create({
         name: req.body.otherModel,
+        images: req.body.images,
         inventoryTypeId: req.body.inventoryTypeId,
         inventoryBrandId: req.body.inventoryBrandId,
       });
@@ -48,8 +49,14 @@ export const createInventory = async (req, res) => {
       req.body.inventoryModelId = inventoryModel.id;
     }
 
+    const user = await db.User.findOne({
+      where: {
+        id: req.userId,
+      },
+    });
+
     let body = {
-      userId: req.body.userId,
+      userId: req.userId,
       inventoryModelId: req.body.inventoryModelId,
       serialNumber: req.body.serialNumber,
       activo: req.body.activo,
@@ -59,7 +66,7 @@ export const createInventory = async (req, res) => {
       altaDate: req.body.altaDate,
       bajaDate: req.body.bajaDate,
       recepcionDate: req.body.recepcionDate,
-      createdBy: req.body.createdBy,
+      createdBy: user.userName,
     };
 
     const inventory = await Inventory.create(body);
@@ -71,7 +78,85 @@ export const createInventory = async (req, res) => {
     console.log(error);
     res.status(500).json({
       message: "Error al crear el inventorio",
-      error: error.errors[0].message,
+      error: error?.errors[0]?.message || error,
+    });
+  }
+};
+
+export const updateInventoryById = async (req, res) => {
+  try {
+    if (
+      req.body.inventoryModelId === "0" &&
+      (await InventoryModel.findOne({
+        where: { name: req.body.otherModel },
+      })) === null
+    ) {
+      if (
+        req.body.inventoryBrandId === "0" &&
+        (await InventoryBrand.findOne({
+          where: { name: req.body.otherBrand },
+        })) === null
+      ) {
+        const inventoryBrand = await InventoryBrand.create({
+          name: req.body.otherBrand,
+        });
+        req.body.inventoryBrandId = inventoryBrand.id;
+      }
+
+      if (
+        req.body.inventoryTypeId === "0" &&
+        (await InventoryType.findOne({
+          where: { name: req.body.otherType },
+        })) === null
+      ) {
+        const inventoryType = await InventoryType.create({
+          name: req.body.otherType,
+        });
+        req.body.inventoryTypeId = inventoryType.id;
+      }
+
+      const inventoryModel = await InventoryModel.create({
+        name: req.body.otherModel,
+        images: req.body.images,
+        inventoryTypeId: req.body.inventoryTypeId,
+        inventoryBrandId: req.body.inventoryBrandId,
+      });
+
+      req.body.inventoryModelId = inventoryModel.id;
+    }
+
+    console.log("recibido", req.body.recepcionDate);
+
+    let body = {
+      inventoryModelId: req.body.inventoryModelId,
+      serialNumber: req.body.serialNumber,
+      activo: req.body.activo,
+      comments: req.body.comments,
+      status: req.body.status,
+      images: req.body.images,
+      altaDate: req.body.altaDate,
+      bajaDate: req.body.bajaDate,
+      recepcionDate: req.body.recepcionDate || null,
+    };
+    await Inventory.update(body, {
+      where: {
+        id: req.params.id,
+      },
+    });
+
+    res.json({
+      message: "Inventario actualizado correctamente",
+      inventory: await Inventory.findOne({
+        where: {
+          id: req.params.id,
+        },
+      }),
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      message: "Error al actualizar el inventario",
+      error,
     });
   }
 };
@@ -174,84 +259,6 @@ export const getInventories = async (req, res) => {
   }
 };
 
-export const updateInventoryById = async (req, res) => {
-  try {
-    if (
-      req.body.inventoryModelId === "0" &&
-      (await InventoryModels.findOne({
-        where: { name: req.body.otherModel },
-      })) === null
-    ) {
-      if (
-        req.body.inventoryBrandId === "0" &&
-        (await InventoryBrand.findOne({
-          where: { name: req.body.otherBrand },
-        })) === null
-      ) {
-        const inventoryBrand = await InventoryBrand.create({
-          name: req.body.otherBrand,
-          inventoryTypeId: req.body.inventoryTypeId,
-        });
-        req.body.inventoryBrandId = inventoryBrand.id;
-      }
-
-      if (
-        req.body.inventoryTypeId === "0" &&
-        (await InventoryType.findOne({
-          where: { name: req.body.otherInventory },
-        })) === null
-      ) {
-        const inventoryType = await InventoryType.create({
-          name: req.body.otherInventory,
-        });
-        req.body.inventoryTypeId = inventoryType.id;
-      }
-
-      const inventoryModel = await InventoryModels.create({
-        name: req.body.otherModel,
-        inventoryTypeId: req.body.inventoryTypeId,
-        inventoryBrandId: req.body.inventoryBrandId,
-      });
-
-      req.body.inventoryModelId = inventoryModel.id;
-    }
-
-    let body = {
-      userId: req.body.userId,
-      inventoryModelId: req.body.inventoryModelId,
-      serialNumber: req.body.serialNumber,
-      activo: req.body.activo,
-      comments: req.body.comments,
-      status: req.body.status,
-      images: req.body.images,
-      altaDate: req.body.altaDate,
-      bajaDate: req.body.bajaDate,
-      recepcionDate: req.body.recepcionDate,
-      createdBy: req.body.createdBy,
-    };
-    await Inventory.update(body, {
-      where: {
-        id: req.params.id,
-      },
-    });
-
-    res.json({
-      message: "Inventario actualizado correctamente",
-      inventory: await Inventory.findOne({
-        where: {
-          id: req.params.id,
-        },
-      }),
-    });
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({
-      message: "Error al actualizar el inventario",
-      error,
-    });
-  }
-};
-
 export const deleteInventoryById = async (req, res) => {
   try {
     await Inventory.destroy({
@@ -293,7 +300,7 @@ export const getInventoryById = async (req, res) => {
 export const getInventoriesByParams = async (req, res) => {
   const { search, brandType, inventoryType, status, page, quantityResults } =
     req.body;
-  const resultsPerPage = parseInt(quantityResults) || 5;
+  const resultsPerPage = parseInt(quantityResults) || 10;
 
   try {
     let whereClause = {
@@ -313,6 +320,21 @@ export const getInventoriesByParams = async (req, res) => {
             [Op.like]: `%${search}%`,
           },
         },
+        {
+          comments: {
+            [Op.like]: `%${search}%`,
+          },
+        },
+        {
+          createdBy: {
+            [Op.like]: `%${search}%`,
+          },
+        },
+        {
+          createdBy: {
+            [Op.like]: `%${search}%`,
+          },
+        },
       ],
     };
 
@@ -321,11 +343,17 @@ export const getInventoriesByParams = async (req, res) => {
     }
 
     if (brandType) {
-      whereClause = { ...whereClause, inventoryBrandId: brandType };
+      whereClause = {
+        ...whereClause,
+        "$inventoryModel.inventoryBrandId$": brandType,
+      };
     }
 
     if (inventoryType) {
-      whereClause = { ...whereClause, inventoryTypeId: inventoryType };
+      whereClause = {
+        ...whereClause,
+        "$inventoryModel.inventoryTypeId$": inventoryType,
+      };
     }
 
     const { count, rows } = await Inventory.findAndCountAll({
