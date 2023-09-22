@@ -8,6 +8,7 @@ const InventoryModel = db.InventoryModel;
 
 export const createInventory = async (req, res) => {
   try {
+    console.log(req.body);
     if (
       req.body.inventoryModelId === "0" &&
       (await InventoryModel.findOne({
@@ -40,7 +41,7 @@ export const createInventory = async (req, res) => {
 
       const inventoryModel = await InventoryModel.create({
         name: req.body.otherModel,
-        images: req.body.images?.length > 0 ? req.body.images : [],
+        images: [],
         inventoryBrandId: req.body.inventoryBrandId,
         inventoryTypeId: req.body.inventoryTypeId,
       });
