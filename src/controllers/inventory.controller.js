@@ -357,7 +357,7 @@ export const getInventoriesByParams = async (req, res) => {
       where: whereClause,
       limit: resultsPerPage,
       offset: (page - 1) * resultsPerPage,
-      order: [["updatedAt", "ASC"]],
+      order: [["updatedAt", "DESC"]],
       include: [
         {
           model: InventoryModel,
