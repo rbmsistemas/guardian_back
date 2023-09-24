@@ -8,7 +8,6 @@ const InventoryModel = db.InventoryModel;
 
 export const createInventory = async (req, res) => {
   try {
-    console.log(req.body);
     if (
       req.body.inventoryModelId === "0" &&
       (await InventoryModel.findOne({
@@ -124,8 +123,6 @@ export const updateInventoryById = async (req, res) => {
 
       req.body.inventoryModelId = inventoryModel.id;
     }
-
-    console.log("recibido", req.body.recepcionDate);
 
     let body = {
       inventoryModelId: req.body.inventoryModelId,

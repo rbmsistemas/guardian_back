@@ -124,7 +124,6 @@ export const logout = async (req, res) => {
 export const getAllUsers = async (req, res) => {
   try {
     const frequency = req.params.time || 7;
-    console.log(frequency);
     const user = await User.findByPk(req.userId);
 
     if (!user) {

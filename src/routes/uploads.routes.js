@@ -27,9 +27,7 @@ router.post("/companies", upload.single("image"), function (req, res) {
   }
 
   // Construir la URL completa de la imagen con el nuevo nombre
-  const imageUrl = `${req.protocol}://${req.get("host")}/uploads/companies/${
-    req.file.filename
-  }`;
+  const imageUrl = `/uploads/companies/${req.file.filename}`;
 
   // Devolver la URL de la imagen en la respuesta
   res.send(imageUrl);

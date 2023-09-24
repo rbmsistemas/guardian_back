@@ -4,6 +4,7 @@ import { Op } from "sequelize";
 const Company = db.Company;
 
 export const createCompany = async (req, res) => {
+  console.log(req.body);
   try {
     const company = await Company.create(req.body);
     res.json({
@@ -62,6 +63,11 @@ export const updateCompanyById = async (req, res) => {
     });
     res.json({
       message: "Compañia actualizado correctamente",
+      company: await Company.findOne({
+        where: {
+          id: req.params.id,
+        },
+      }),
     });
   } catch (error) {
     console.log(error);
@@ -102,12 +108,12 @@ export const getCompaniesByParams = async (req, res) => {
     let whereClause = {
       [Op.or]: [
         {
-          company: {
+          name: {
             [Op.like]: `%${search}%`,
           },
         },
         {
-          encargado: {
+          manager: {
             [Op.like]: `%${search}%`,
           },
         },
@@ -118,6 +124,11 @@ export const getCompaniesByParams = async (req, res) => {
         },
         {
           phone: {
+            [Op.like]: `%${search}%`,
+          },
+        },
+        {
+          comments: {
             [Op.like]: `%${search}%`,
           },
         },
