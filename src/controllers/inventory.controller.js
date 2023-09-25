@@ -295,10 +295,19 @@ export const getInventoryById = async (req, res) => {
 };
 
 export const getInventoriesByParams = async (req, res) => {
-  const { search, brandType, inventoryType, status, page, quantityResults } =
-    req.body;
+  const {
+    search,
+    brandType,
+    inventoryType,
+    status,
+    page,
+    quantityResults,
+    orderBy,
+    sort,
+  } = req.body;
   const resultsPerPage = parseInt(quantityResults) || 10;
 
+  let order = [["updatedAt", "DESC"]];
   try {
     let whereClause = {
       [Op.or]: [
@@ -353,11 +362,28 @@ export const getInventoriesByParams = async (req, res) => {
       };
     }
 
+    if (sort && orderBy) {
+      if (orderBy === "inventoryBrandId" || orderBy === "inventoryTypeId") {
+        order = [
+          [
+            {
+              model: InventoryModel,
+              as: "inventoryModel",
+            },
+            orderBy,
+            sort,
+          ],
+        ];
+      } else {
+        order = [[orderBy, sort]];
+      }
+    }
+
     const { count, rows } = await Inventory.findAndCountAll({
       where: whereClause,
       limit: resultsPerPage,
       offset: (page - 1) * resultsPerPage,
-      order: [["updatedAt", "DESC"]],
+      order: order,
       include: [
         {
           model: InventoryModel,
