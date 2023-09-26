@@ -307,7 +307,7 @@ export const getInventoriesByParams = async (req, res) => {
   } = req.body;
   const resultsPerPage = parseInt(quantityResults) || 10;
 
-  let order = [["updatedAt", "DESC"]];
+  let order = [["updatedAt", "ASC"]];
   try {
     let whereClause = {
       [Op.or]: [
