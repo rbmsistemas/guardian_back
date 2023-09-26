@@ -336,18 +336,6 @@ export const getInventoriesByParams = async (req, res) => {
             [Op.like]: `%${search}%`,
           },
         },
-        {
-          createdAt: {
-            [Op.gte]: search,
-            [Op.lte]: new Date(new Date(search).setHours(23, 59, 59, 999)), // end of day
-          },
-        },
-        {
-          updatedAt: {
-            [Op.gte]: search,
-            [Op.lte]: new Date(new Date(search).setHours(23, 59, 59, 999)), // end of day
-          },
-        },
       ],
     };
 
