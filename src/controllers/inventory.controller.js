@@ -337,7 +337,12 @@ export const getInventoriesByParams = async (req, res) => {
           },
         },
         {
-          createdBy: {
+          createdAt: {
+            [Op.like]: `%${search}%`,
+          },
+        },
+        {
+          updatedAt: {
             [Op.like]: `%${search}%`,
           },
         },
