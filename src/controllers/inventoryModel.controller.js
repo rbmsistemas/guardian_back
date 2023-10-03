@@ -4,7 +4,9 @@ const InventoryModel = db.InventoryModel;
 
 export const getInventoryModels = async (req, res) => {
   try {
-    const inventoryModels = await InventoryModel.findAll();
+    const inventoryModels = await InventoryModel.findAll({
+      order: [["name", "ASC"]],
+    });
     res.json({
       inventoryModels,
     });
