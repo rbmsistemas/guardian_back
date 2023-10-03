@@ -23,7 +23,7 @@ module.exports = {
       "User",
       [
         {
-          vid: uuid.v4(),
+          id: uuid.v4(),
           firstName: "Juan Jose",
           lastName: "Pineda",
           email: "juan.pineda@sita.aero",
