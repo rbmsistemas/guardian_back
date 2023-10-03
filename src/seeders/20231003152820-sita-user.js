@@ -28,7 +28,7 @@ module.exports = {
           lastName: "Pineda",
           email: "juan.pineda@sita.aero",
           phone: "3221355695",
-          password: await encryptPassword("jpnieda"),
+          password: await encryptPassword("jpineda"),
           userName: "jpineda",
           rol: 3,
           photo: "",
