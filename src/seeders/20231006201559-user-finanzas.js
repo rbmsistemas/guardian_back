@@ -1,5 +1,11 @@
 "use strict";
+const bcrypt = require("bcryptjs");
+const uuid = require("uuid");
 
+const encryptPassword = async function (password) {
+  const salt = await bcrypt.genSalt(10);
+  return await bcrypt.hash(password, salt);
+};
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
