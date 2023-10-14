@@ -11,6 +11,7 @@ import {
   getValidateActivo,
 } from "../controllers/inventory.controller.js";
 import { verifyToken } from "../middleware/index.js";
+import ping from "ping";
 
 const router = Router();
 
@@ -27,5 +28,11 @@ router.post("/inventories", verifyToken, createInventory);
 router.patch("/inventories/:id", verifyToken, updateInventoryById);
 router.delete("/inventories/:id", verifyToken, deleteInventoryById);
 router.post("/inventories/search", verifyToken, getInventoriesByParams);
+
+router.post("/inventories/ping", async (req, res) => {
+  const { ipAddress } = req.body;
+  const result = await ping.promise.probe(ipAddress);
+  res.status(200).json(result);
+});
 
 export default router;
