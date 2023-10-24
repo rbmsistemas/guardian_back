@@ -9,6 +9,7 @@ import {
   getInventoriesByParams,
   getValidateSerialNumber,
   getValidateActivo,
+  getInventoriesBySearch,
 } from "../controllers/inventory.controller.js";
 import { verifyToken } from "../middleware/index.js";
 import ping from "ping";
@@ -27,7 +28,8 @@ router.post("/inventories/validateActivo", verifyToken, getValidateActivo);
 router.post("/inventories", verifyToken, createInventory);
 router.patch("/inventories/:id", verifyToken, updateInventoryById);
 router.delete("/inventories/:id", verifyToken, deleteInventoryById);
-router.post("/inventories/search", verifyToken, getInventoriesByParams);
+router.post("/inventories/params", verifyToken, getInventoriesByParams);
+router.post("/inventories/search", verifyToken, getInventoriesBySearch);
 
 router.post("/inventories/ping", async (req, res) => {
   const { ipAddress } = req.body;

@@ -43,24 +43,29 @@ export const getInventoryModelsByParams = async (req, res) => {
     sort,
   } = req.body;
 
-  let order = [["name", "DESC"]];
-
   try {
     let where = {};
     if (inventoryTypeId) where.inventoryTypeId = inventoryTypeId;
     if (inventoryBrandId) where.inventoryBrandId = inventoryBrandId;
     if (search) where.name = search;
 
+    let order = [["name", "ASC"]]; // Default sorting
+
     if (orderBy && sort) {
       if (orderBy === "name") {
-        order = [[orderBy, sort]];
-      } else if (orderBy === "inventoryType") {
-        order = [[InventoryType, "name", sort]];
-      } else if (orderBy === "inventoryBrand") {
-        order = [[InventoryBrand, "name", sort]];
-      } else {
-        order = [[orderBy, sort]];
+        order = [["name", sort]];
+      } else if (orderBy === "inventoryTypeId") {
+        order = [[{ model: InventoryType, as: "inventoryType" }, "name", sort]];
+      } else if (orderBy === "inventoryBrandId") {
+        order = [
+          [{ model: InventoryBrand, as: "inventoryBrand" }, "name", sort],
+        ];
       }
+
+      // Additional debug logs
+      console.log("orderBy:", orderBy);
+      console.log("sort:", sort);
+      console.log("order:", order);
     }
 
     const inventoryModels = await InventoryModel.findAll({

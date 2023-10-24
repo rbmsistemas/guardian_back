@@ -306,8 +306,8 @@ export const getInventoriesByParams = async (req, res) => {
     sort,
   } = req.body;
   const resultsPerPage = parseInt(quantityResults) || 10;
-
   let order = [["updatedAt", "DESC"]];
+
   try {
     let whereClause = {
       [Op.or]: [
@@ -394,6 +394,65 @@ export const getInventoriesByParams = async (req, res) => {
       inventories: rows,
       totalPages,
       totalEntries,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      message: "Error al obtener los inventarios",
+      error,
+    });
+  }
+};
+export const getInventoriesBySearch = async (req, res) => {
+  const { search } = req.body;
+  const resultsPerPage = 20;
+  let order = [["updatedAt", "DESC"]];
+
+  try {
+    let whereClause = {
+      [Op.or]: [
+        {
+          "$inventoryModel.name$": {
+            [Op.like]: `%${search}%`,
+          },
+        },
+        {
+          serialNumber: {
+            [Op.like]: `%${search}%`,
+          },
+        },
+        {
+          activo: {
+            [Op.like]: `%${search}%`,
+          },
+        },
+        {
+          comments: {
+            [Op.like]: `%${search}%`,
+          },
+        },
+        {
+          createdBy: {
+            [Op.like]: `%${search}%`,
+          },
+        },
+      ],
+    };
+
+    const { rows } = await Inventory.findAndCountAll({
+      where: whereClause,
+      limit: resultsPerPage,
+      order: order,
+      include: [
+        {
+          model: InventoryModel,
+          as: "inventoryModel",
+        },
+      ],
+    });
+
+    res.json({
+      inventories: rows,
     });
   } catch (error) {
     console.log(error);
