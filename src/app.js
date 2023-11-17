@@ -9,6 +9,7 @@ import inventoryRoutes from "./routes/inventory.routes.js";
 import inventoryTypeRoutes from "./routes/inventoryType.routes.js";
 import inventoryBrand from "./routes/inventoryBrand.routes.js";
 import inventoryModel from "./routes/inventoryModel.routes.js";
+import inventoryField from "./routes/inventoryField.routes.js";
 
 const app = express();
 
@@ -23,6 +24,7 @@ app.use("/api", inventoryRoutes);
 app.use("/api", inventoryTypeRoutes);
 app.use("/api", inventoryBrand);
 app.use("/api", inventoryModel);
+app.use("/api", inventoryField);
 app.use("/api/uploads", uploadsInventoryRoutes);
 app.use("/api/uploads", uploadsRoutes);
 

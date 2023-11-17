@@ -16,6 +16,11 @@ export default (sequelize, DataTypes) => {
         foreignKey: "userId",
         as: "user",
       });
+      // Inventory.belongsToMany(models.InventoryField, {
+      //   through: null,
+      //   foreignKey: "inventoryId",
+      //   as: "inventoryFields",
+      // });
     }
   }
 
@@ -81,6 +86,16 @@ export default (sequelize, DataTypes) => {
       recepcionDate: {
         allowNull: true,
         type: DataTypes.DATE,
+      },
+      details: {
+        type: DataTypes.JSON,
+        allowNull: false,
+        defaultValue: JSON.stringify([
+          { key: "orden de compra", value: "" },
+          { key: "factura", value: "" },
+          { key: "ubicacion", value: "" },
+          { key: "usuario", value: "" },
+        ]),
       },
       createdBy: {
         type: DataTypes.STRING,

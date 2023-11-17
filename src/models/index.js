@@ -6,6 +6,7 @@ import Inventory from "./inventory.js";
 import InventoryBrand from "./inventorybrand.js";
 import InventoryModel from "./inventorymodel.js";
 import InventoryType from "./inventorytype.js";
+import InventoryField from "./inventoryfield.js";
 
 let models = {};
 
@@ -16,6 +17,7 @@ try {
   models.InventoryBrand = InventoryBrand(sequelize, Sequelize.DataTypes);
   models.InventoryModel = InventoryModel(sequelize, Sequelize.DataTypes);
   models.InventoryType = InventoryType(sequelize, Sequelize.DataTypes);
+  models.InventoryField = InventoryField(sequelize, Sequelize.DataTypes);
 
   models.User.associate(models);
   models.Company.associate(models);
@@ -23,6 +25,7 @@ try {
   models.InventoryBrand.associate(models);
   models.InventoryModel.associate(models);
   models.InventoryType.associate(models);
+  models.InventoryField.associate(models);
 } catch (error) {
   console.log(error);
 }

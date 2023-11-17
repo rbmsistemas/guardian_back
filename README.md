@@ -93,3 +93,4 @@ Nota: El objeto `db` contiene todos los modelos existentes.
 `npx sequelize-cli db:seed:all`
 `npx sequelize-cli db:seed:undo`
 `npm run seed` correr los seeders
+`npx sequelize-cli db:seed --seed 20231117012907-update-inventory-details.js` seed especifico

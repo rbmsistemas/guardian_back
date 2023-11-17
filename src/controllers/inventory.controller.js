@@ -6,6 +6,13 @@ const InventoryType = db.InventoryType;
 const InventoryBrand = db.InventoryBrand;
 const InventoryModel = db.InventoryModel;
 
+const defaultDetails = [
+  { key: "orden de compra", value: "" },
+  { key: "factura", value: "" },
+  { key: "ubicacion", value: "" },
+  { key: "usuario", value: "" },
+];
+
 export const createInventory = async (req, res) => {
   try {
     if (
@@ -48,6 +55,26 @@ export const createInventory = async (req, res) => {
       req.body.inventoryModelId = inventoryModel.id;
     }
 
+    await Promise.all(
+      req.body.details.map(async (detail) => {
+        const inventoryField = await db.InventoryField.findOne({
+          where: {
+            name: detail.key,
+          },
+        });
+
+        if (inventoryField === null) {
+          return await db.InventoryField.create({
+            name: detail.key,
+          });
+        } else {
+          return inventoryField;
+        }
+      })
+    );
+
+    const inventoryFields = await db.InventoryField.findAll();
+
     const user = await db.User.findOne({
       where: {
         id: req.userId,
@@ -65,6 +92,7 @@ export const createInventory = async (req, res) => {
       altaDate: req.body.altaDate,
       bajaDate: req.body.bajaDate,
       recepcionDate: req.body.recepcionDate,
+      details: req.body.details || defaultDetails,
       createdBy: user.userName,
     };
 
@@ -72,6 +100,7 @@ export const createInventory = async (req, res) => {
     res.json({
       message: "Inventorio creado correctamente",
       inventory,
+      inventoryFields,
     });
   } catch (error) {
     console.log(error);
@@ -84,6 +113,8 @@ export const createInventory = async (req, res) => {
 
 export const updateInventoryById = async (req, res) => {
   try {
+    console.log(req.body);
+
     if (
       req.body.inventoryModelId === "0" &&
       (await InventoryModel.findOne({
@@ -124,6 +155,26 @@ export const updateInventoryById = async (req, res) => {
       req.body.inventoryModelId = inventoryModel.id;
     }
 
+    await Promise.all(
+      req.body.details.map(async (detail) => {
+        const inventoryField = await db.InventoryField.findOne({
+          where: {
+            name: detail.key,
+          },
+        });
+
+        if (inventoryField === null) {
+          return await db.InventoryField.create({
+            name: detail.key,
+          });
+        } else {
+          return inventoryField;
+        }
+      })
+    );
+
+    const inventoryFields = await db.InventoryField.findAll();
+
     let body = {
       inventoryModelId: req.body.inventoryModelId,
       serialNumber: req.body.serialNumber,
@@ -134,6 +185,7 @@ export const updateInventoryById = async (req, res) => {
       altaDate: req.body.altaDate,
       bajaDate: req.body.bajaDate,
       recepcionDate: req.body.recepcionDate || null,
+      details: req.body.details || defaultDetails,
     };
     await Inventory.update(body, {
       where: {
@@ -148,6 +200,7 @@ export const updateInventoryById = async (req, res) => {
           id: req.params.id,
         },
       }),
+      inventoryFields,
     });
   } catch (error) {
     console.log(error);
@@ -332,6 +385,11 @@ export const getInventoriesByParams = async (req, res) => {
           },
         },
         {
+          details: {
+            [Op.like]: `%${search}%`,
+          },
+        },
+        {
           createdBy: {
             [Op.like]: `%${search}%`,
           },
@@ -428,6 +486,11 @@ export const getInventoriesBySearch = async (req, res) => {
         },
         {
           comments: {
+            [Op.like]: `%${search}%`,
+          },
+        },
+        {
+          details: {
             [Op.like]: `%${search}%`,
           },
         },
