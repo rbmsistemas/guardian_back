@@ -170,7 +170,7 @@ export const updateInventoryById = async (req, res) => {
         }
       })
     );
-
+    console.log(req.body);
     const inventoryFields = await db.InventoryField.findAll();
 
     let body = {
