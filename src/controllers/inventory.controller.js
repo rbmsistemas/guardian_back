@@ -152,9 +152,9 @@ export const updateInventoryById = async (req, res) => {
 
       req.body.inventoryModelId = inventoryModel.id;
     }
-    console.log(req.body.details);
+
     await Promise.all(
-      req.body.details?.map(async (detail) => {
+      req.body?.details?.map(async (detail) => {
         const inventoryField = await db.InventoryField.findOne({
           where: {
             name: detail.key,
