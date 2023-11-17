@@ -113,8 +113,6 @@ export const createInventory = async (req, res) => {
 
 export const updateInventoryById = async (req, res) => {
   try {
-    console.log(req.body);
-
     if (
       req.body.inventoryModelId === "0" &&
       (await InventoryModel.findOne({
@@ -156,7 +154,7 @@ export const updateInventoryById = async (req, res) => {
     }
 
     await Promise.all(
-      req.body.details.map(async (detail) => {
+      req.body.details?.map(async (detail) => {
         const inventoryField = await db.InventoryField.findOne({
           where: {
             name: detail.key,
