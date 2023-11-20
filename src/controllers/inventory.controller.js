@@ -1,5 +1,6 @@
 import db from "../models/index.js";
-import { Op } from "sequelize";
+import { Op, literal } from "sequelize";
+import { normalize } from "normalize-diacritics";
 
 const Inventory = db.Inventory;
 const InventoryType = db.InventoryType;
@@ -459,43 +460,67 @@ export const getInventoriesByParams = async (req, res) => {
     });
   }
 };
+
 export const getInventoriesBySearch = async (req, res) => {
   const { search } = req.body;
   const resultsPerPage = 20;
   let order = [["updatedAt", "DESC"]];
 
   try {
-    let whereClause = {
+    if (typeof search !== "string") {
+      return res.status(400).json({
+        message: "El parámetro de búsqueda no es válido. Debe ser una cadena.",
+      });
+    }
+
+    const normalizedSearch = await normalize(search.toLowerCase());
+
+    const keywords = normalizedSearch
+      .split(/\s+/)
+      .filter((keyword) => keyword.trim() !== "");
+
+    const orConditions = keywords.map((keyword) => ({
       [Op.or]: [
         {
           "$inventoryModel.name$": {
-            [Op.like]: `%${search}%`,
+            [Op.like]: `%${keyword}%`,
           },
         },
         {
           serialNumber: {
-            [Op.like]: `%${search}%`,
+            [Op.like]: `%${keyword}%`,
           },
         },
         {
           activo: {
-            [Op.like]: `%${search}%`,
+            [Op.like]: `%${keyword}%`,
           },
         },
         {
           comments: {
-            [Op.like]: `%${search}%`,
+            [Op.like]: `%${keyword}%`,
+          },
+        },
+        // literal(`JSON_EXTRACT(details, '$[*].key') LIKE '%${keyword}%'`),
+        literal(`JSON_EXTRACT(details, '$[*].value') LIKE '%${keyword}%'`),
+        {
+          "$inventoryModel.inventoryBrand.name$": {
+            [Op.like]: `%${keyword}%`,
           },
         },
         {
-          details: {
-            [Op.like]: `%${search}%`,
+          "$inventoryModel.inventoryType.name$": {
+            [Op.like]: `%${keyword}%`,
           },
         },
+      ],
+    }));
+
+    let whereClause = {
+      [Op.and]: [
+        // Otras condiciones AND que puedas tener
         {
-          createdBy: {
-            [Op.like]: `%${search}%`,
-          },
+          [Op.or]: orConditions,
         },
       ],
     };
@@ -508,6 +533,16 @@ export const getInventoriesBySearch = async (req, res) => {
         {
           model: InventoryModel,
           as: "inventoryModel",
+          include: [
+            {
+              model: InventoryBrand,
+              as: "inventoryBrand",
+            },
+            {
+              model: InventoryType,
+              as: "inventoryType",
+            },
+          ],
         },
       ],
     });
