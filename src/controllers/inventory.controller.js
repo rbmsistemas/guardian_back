@@ -657,7 +657,7 @@ export const getInventoryGroups = async (req, res) => {
           ],
         },
       ],
-      limit: 15,
+      limit: 25,
     });
 
     res.json({
