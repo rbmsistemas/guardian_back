@@ -10,6 +10,7 @@ import {
   getValidateSerialNumber,
   getValidateActivo,
   getInventoriesBySearch,
+  getInventoryGroups,
 } from "../controllers/inventory.controller.js";
 import { verifyToken } from "../middleware/index.js";
 import ping from "ping";
@@ -30,6 +31,7 @@ router.patch("/inventories/:id", verifyToken, updateInventoryById);
 router.delete("/inventories/:id", verifyToken, deleteInventoryById);
 router.post("/inventories/params", verifyToken, getInventoriesByParams);
 router.post("/inventories/search", verifyToken, getInventoriesBySearch);
+router.post("/inventories/groups", verifyToken, getInventoryGroups);
 
 router.post("/inventories/ping", async (req, res) => {
   const { ipAddress } = req.body;

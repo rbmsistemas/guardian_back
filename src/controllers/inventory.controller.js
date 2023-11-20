@@ -577,3 +577,96 @@ export const getInventoryByTypeId = async (req, res) => {
     });
   }
 };
+
+// function to get the inventory details only where the value is not empty
+export const getInventoryGroups = async (req, res) => {
+  const { name, type } = req.body;
+
+  try {
+    if (typeof name !== "string") {
+      return res.status(400).json({
+        message: "El parámetro de búsqueda no es válido. Debe ser una cadena.",
+      });
+    }
+    if (typeof type !== "string") {
+      return res.status(400).json({
+        message: "El parámetro de llave no es válido. Debe ser una cadena.",
+      });
+    }
+
+    const normalizedName = await normalize(name.toLowerCase());
+    const normalizedType = await normalize(type.toLowerCase());
+
+    // const keywords = normalizedName
+    //   .split(/\s+/)
+    //   .filter((keyword) => keyword.trim() !== "");
+
+    // const keywordType = normalizedType
+    //   .split(/\s+/)
+    //   .filter((keyword) => keyword.trim() !== "");
+
+    // let orConditions = [];
+    // if (name) {
+    //   orConditions = keywords.map((keyword) => ({
+    //     [Op.or]: [
+    //       literal(`JSON_EXTRACT(details, '$[*].value') LIKE '%${keyword}%'`),
+    //     ],
+    //   }));
+    // }
+
+    // if (type) {
+    //   orConditions = keywordType.map((keyword) => ({
+    //     [Op.or]: [
+    //       literal(`JSON_EXTRACT(details, '$[*].key') LIKE '%${keyword}%'`),
+    //     ],
+    //   }));
+    // }
+
+    // if (!name && !type) {
+    //   orConditions = [
+    //     {
+    //       [Op.or]: [literal(`JSON_EXTRACT(details, '$[*].value') LIKE '%%'`)],
+    //     },
+    //   ];
+    // }
+
+    let whereClause = {
+      [Op.and]: [
+        literal(
+          `JSON_EXTRACT(details, '$[*].value') LIKE '%${normalizedName}%'`
+        ),
+        literal(`JSON_EXTRACT(details, '$[*].key') LIKE '%${normalizedType}%'`),
+      ],
+    };
+
+    const { rows } = await Inventory.findAndCountAll({
+      where: whereClause,
+      include: [
+        {
+          model: InventoryModel,
+          as: "inventoryModel",
+          include: [
+            {
+              model: InventoryBrand,
+              as: "inventoryBrand",
+            },
+            {
+              model: InventoryType,
+              as: "inventoryType",
+            },
+          ],
+        },
+      ],
+    });
+
+    res.json({
+      inventoryGroups: rows,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      message: "Error al obtener los detalles del inventario",
+      error,
+    });
+  }
+};
