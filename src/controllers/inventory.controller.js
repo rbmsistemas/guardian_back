@@ -578,7 +578,6 @@ export const getInventoryByTypeId = async (req, res) => {
   }
 };
 
-// function to get the inventory details only where the value is not empty
 export const getInventoryGroups = async (req, res) => {
   const { name, type } = req.body;
 
@@ -594,46 +593,17 @@ export const getInventoryGroups = async (req, res) => {
       });
     }
 
-    const normalizedName = await normalize(name.toLowerCase());
-    const normalizedType = await normalize(type.toLowerCase());
-
-    // const keywords = normalizedName
-    //   .split(/\s+/)
-    //   .filter((keyword) => keyword.trim() !== "");
-
-    // const keywordType = normalizedType
-    //   .split(/\s+/)
-    //   .filter((keyword) => keyword.trim() !== "");
-
-    // let orConditions = [];
-    // if (name) {
-    //   orConditions = keywords.map((keyword) => ({
-    //     [Op.or]: [
-    //       literal(`JSON_EXTRACT(details, '$[*].value') LIKE '%${keyword}%'`),
-    //     ],
-    //   }));
-    // }
-
-    // if (type) {
-    //   orConditions = keywordType.map((keyword) => ({
-    //     [Op.or]: [
-    //       literal(`JSON_EXTRACT(details, '$[*].key') LIKE '%${keyword}%'`),
-    //     ],
-    //   }));
-    // }
-
-    // if (!name && !type) {
-    //   orConditions = [
-    //     {
-    //       [Op.or]: [literal(`JSON_EXTRACT(details, '$[*].value') LIKE '%%'`)],
-    //     },
-    //   ];
-    // }
+    const lowerCaseName = name.toLowerCase();
+    const lowerCaseType = type.toLowerCase();
 
     let whereClause = {
       [Op.and]: [
-        literal(`JSON_EXTRACT(details, '$[*].value') LIKE '%${name}%'`),
-        literal(`JSON_EXTRACT(details, '$[*].key') LIKE '%${type}%'`),
+        literal(
+          `LOWER(JSON_EXTRACT(details, '$[*].value')) LIKE LOWER('%${lowerCaseName}%')`
+        ),
+        literal(
+          `LOWER(JSON_EXTRACT(details, '$[*].key')) LIKE LOWER('%${lowerCaseType}%')`
+        ),
       ],
     };
 
@@ -655,7 +625,6 @@ export const getInventoryGroups = async (req, res) => {
           ],
         },
       ],
-      limit: 20,
       order: [["updatedAt", "DESC"]],
     });
 
