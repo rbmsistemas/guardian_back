@@ -632,10 +632,8 @@ export const getInventoryGroups = async (req, res) => {
 
     let whereClause = {
       [Op.and]: [
-        literal(
-          `JSON_EXTRACT(details, '$[*].value') LIKE '%${normalizedName}%'`
-        ),
-        literal(`JSON_EXTRACT(details, '$[*].key') LIKE '%${normalizedType}%'`),
+        literal(`JSON_EXTRACT(details, '$[*].value') LIKE '%${name}%'`),
+        literal(`JSON_EXTRACT(details, '$[*].key') LIKE '%${type}%'`),
       ],
     };
 
@@ -660,6 +658,8 @@ export const getInventoryGroups = async (req, res) => {
       limit: 20,
       order: [["updatedAt", "DESC"]],
     });
+
+    console.log(rows);
 
     res.json({
       inventoryGroups: rows,
