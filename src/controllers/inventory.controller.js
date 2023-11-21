@@ -659,8 +659,6 @@ export const getInventoryGroups = async (req, res) => {
       order: [["updatedAt", "DESC"]],
     });
 
-    console.log(rows);
-
     res.json({
       inventoryGroups: rows,
     });
