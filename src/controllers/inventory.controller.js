@@ -582,30 +582,40 @@ export const getInventoryGroups = async (req, res) => {
   const { name, type } = req.body;
 
   try {
-    if (typeof name !== "string") {
-      return res.status(400).json({
-        message: "El parámetro de búsqueda no es válido. Debe ser una cadena.",
-      });
-    }
-    if (typeof type !== "string") {
-      return res.status(400).json({
-        message: "El parámetro de llave no es válido. Debe ser una cadena.",
-      });
-    }
+    let whereClause = {};
+    if (name) {
+      if (typeof name !== "string") {
+        return res.status(400).json({
+          message:
+            "El parámetro de búsqueda no es válido. Debe ser una cadena.",
+        });
+      }
 
-    const lowerCaseName = name.toLowerCase();
-    const lowerCaseType = type.toLowerCase();
+      const lowerCaseName = name.toLowerCase();
 
-    let whereClause = {
-      [Op.and]: [
-        literal(
-          `LOWER(JSON_EXTRACT(details, '$[*].value')) LIKE LOWER('%${lowerCaseName}%')`
-        ),
-        literal(
-          `LOWER(JSON_EXTRACT(details, '$[*].key')) LIKE LOWER('%${lowerCaseType}%')`
-        ),
-      ],
-    };
+      whereClause = {
+        [Op.and]: [
+          literal(
+            `LOWER(JSON_EXTRACT(details, '$[*].value')) LIKE LOWER('%${lowerCaseName}%')`
+          ),
+        ],
+      };
+    }
+    if (type) {
+      if (typeof type !== "string") {
+        return res.status(400).json({
+          message: "El parámetro de llave no es válido. Debe ser una cadena.",
+        });
+      }
+      const lowerCaseType = type.toLowerCase();
+      whereClause = {
+        [Op.and]: [
+          literal(
+            `LOWER(JSON_EXTRACT(details, '$[*].key')) LIKE LOWER('%${lowerCaseType}%')`
+          ),
+        ],
+      };
+    }
 
     const { rows } = await Inventory.findAndCountAll({
       where: whereClause,
