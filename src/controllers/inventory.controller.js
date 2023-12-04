@@ -599,6 +599,7 @@ export const getInventoryGroups = async (req, res) => {
             `LOWER(JSON_EXTRACT(details, '$[*].value')) LIKE LOWER('%${lowerCaseName}%')`
           ),
         ],
+        ...whereClause,
       };
     }
     if (type) {
@@ -614,6 +615,7 @@ export const getInventoryGroups = async (req, res) => {
             `LOWER(JSON_EXTRACT(details, '$[*].key')) LIKE LOWER('%${lowerCaseType}%')`
           ),
         ],
+        ...whereClause,
       };
     }
 
