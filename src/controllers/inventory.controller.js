@@ -462,7 +462,7 @@ export const getInventoriesByParams = async (req, res) => {
 };
 
 export const getInventoriesBySearch = async (req, res) => {
-  const { search } = req.body;
+  const { search, advancedSearch } = req.body;
   const resultsPerPage = 20;
   let order = [["updatedAt", "DESC"]];
 
@@ -479,49 +479,67 @@ export const getInventoriesBySearch = async (req, res) => {
       .split(/\s+/)
       .filter((keyword) => keyword.trim() !== "");
 
-    const orConditions = keywords.map((keyword) => ({
+    let advancedResults = [];
+
+    let whereClause = {
       [Op.or]: [
         {
           "$inventoryModel.name$": {
-            [Op.like]: `%${keyword}%`,
+            [Op.like]: `%${normalizedSearch}%`,
           },
         },
         {
           serialNumber: {
-            [Op.like]: `%${keyword}%`,
+            [Op.like]: `%${normalizedSearch}%`,
           },
         },
         {
           activo: {
-            [Op.like]: `%${keyword}%`,
+            [Op.like]: `%${normalizedSearch}%`,
           },
         },
         {
           comments: {
-            [Op.like]: `%${keyword}%`,
+            [Op.like]: `%${normalizedSearch}%`,
           },
         },
-        // literal(`JSON_EXTRACT(details, '$[*].key') LIKE '%${keyword}%'`),
-        literal(`JSON_EXTRACT(details, '$[*].value') LIKE '%${keyword}%'`),
+        {
+          details: {
+            [Op.like]: `%${normalizedSearch}%`,
+          },
+        },
+        {
+          createdBy: {
+            [Op.like]: `%${normalizedSearch}%`,
+          },
+        },
         {
           "$inventoryModel.inventoryBrand.name$": {
-            [Op.like]: `%${keyword}%`,
+            [Op.like]: `%${normalizedSearch}%`,
           },
         },
         {
           "$inventoryModel.inventoryType.name$": {
-            [Op.like]: `%${keyword}%`,
+            [Op.like]: `%${normalizedSearch}%`,
           },
         },
-      ],
-    }));
-
-    let whereClause = {
-      [Op.and]: [
-        // Otras condiciones AND que puedas tener
         {
-          [Op.or]: orConditions,
+          createdBy: {
+            [Op.like]: `%${normalizedSearch}%`,
+          },
         },
+        literal(
+          `JSON_EXTRACT(details, '$[*].value') LIKE '%${normalizedSearch}%'`
+        ),
+        literal(
+          `DATE_FORMAT(altaDate, '%d/%m/%Y') LIKE '%${normalizedSearch}%'`
+        ),
+        literal(
+          `DATE_FORMAT(bajaDate, '%d/%m/%Y') LIKE '%${normalizedSearch}%'`
+        ),
+        literal(
+          `DATE_FORMAT(recepcionDate, '%d/%m/%Y') LIKE '%${normalizedSearch}%'`
+        ),
       ],
     };
 
@@ -547,8 +565,95 @@ export const getInventoriesBySearch = async (req, res) => {
       ],
     });
 
+    if (advancedSearch) {
+      const idsToExclude = new Set(rows?.map((result) => result.id));
+
+      for (const keyword of keywords) {
+        const orConditions = [
+          {
+            "$inventoryModel.name$": {
+              [Op.like]: `%${keyword}%`,
+            },
+          },
+          {
+            serialNumber: {
+              [Op.like]: `%${keyword}%`,
+            },
+          },
+          {
+            activo: {
+              [Op.like]: `%${keyword}%`,
+            },
+          },
+          {
+            comments: {
+              [Op.like]: `%${keyword}%`,
+            },
+          },
+          literal(`JSON_EXTRACT(details, '$[*].value') LIKE '%${keyword}%'`),
+          {
+            "$inventoryModel.inventoryBrand.name$": {
+              [Op.like]: `%${keyword}%`,
+            },
+          },
+          {
+            "$inventoryModel.inventoryType.name$": {
+              [Op.like]: `%${keyword}%`,
+            },
+          },
+          {
+            createdBy: {
+              [Op.like]: `%${keyword}%`,
+            },
+          },
+          literal(`DATE_FORMAT(altaDate, '%d/%m/%Y') LIKE '%${keyword}%'`),
+          literal(`DATE_FORMAT(bajaDate, '%d/%m/%Y') LIKE '%${keyword}%'`),
+          literal(`DATE_FORMAT(recepcionDate, '%d/%m/%Y') LIKE '%${keyword}%'`),
+        ];
+
+        orConditions.push({
+          id: {
+            [Op.notIn]: idsToExclude,
+          },
+        });
+
+        const whereClause = {
+          [Op.or]: orConditions,
+        };
+
+        const { rows } = await Inventory.findAndCountAll({
+          where: whereClause,
+          limit: resultsPerPage,
+          order: order,
+          include: [
+            {
+              model: InventoryModel,
+              as: "inventoryModel",
+              include: [
+                {
+                  model: InventoryBrand,
+                  as: "inventoryBrand",
+                },
+                {
+                  model: InventoryType,
+                  as: "inventoryType",
+                },
+              ],
+            },
+          ],
+        });
+
+        advancedResults.push(...rows);
+      }
+
+      advancedResults = advancedResults.filter(
+        (result) => !idsToExclude.has(result.id)
+      );
+    }
+
     res.json({
       inventories: rows,
+      advancedResults,
     });
   } catch (error) {
     console.log(error);
