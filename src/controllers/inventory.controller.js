@@ -98,9 +98,30 @@ export const createInventory = async (req, res) => {
     };
 
     const inventory = await Inventory.create(body);
+    // return the new inventory with model and brand and type data
     res.json({
-      message: "Inventorio creado correctamente",
-      inventory,
+      message: "Inventario creado correctamente",
+      inventory: await Inventory.findOne({
+        where: {
+          id: inventory.id,
+        },
+        include: [
+          {
+            model: InventoryModel,
+            as: "inventoryModel",
+            include: [
+              {
+                model: InventoryBrand,
+                as: "inventoryBrand",
+              },
+              {
+                model: InventoryType,
+                as: "inventoryType",
+              },
+            ],
+          },
+        ],
+      }),
       inventoryFields,
     });
   } catch (error) {
@@ -227,7 +248,7 @@ export const getValidateSerialNumber = async (req, res) => {
         ],
       },
     });
-
+    console.log(inventory);
     if (inventory) {
       res.json({
         message: "Serial Number ya existe",
@@ -590,7 +611,11 @@ export const getInventoriesBySearch = async (req, res) => {
               [Op.like]: `%${keyword}%`,
             },
           },
-          literal(`JSON_EXTRACT(details, '$[*].value') LIKE '%${keyword}%'`),
+          {
+            details: {
+              [Op.like]: `%${keyword}%`,
+            },
+          },
           {
             "$inventoryModel.inventoryBrand.name$": {
               [Op.like]: `%${keyword}%`,
@@ -606,6 +631,7 @@ export const getInventoriesBySearch = async (req, res) => {
               [Op.like]: `%${keyword}%`,
             },
           },
+          literal(`JSON_EXTRACT(details, '$[*].value') LIKE '%${keyword}%'`),
           literal(`DATE_FORMAT(altaDate, '%d/%m/%Y') LIKE '%${keyword}%'`),
           literal(`DATE_FORMAT(bajaDate, '%d/%m/%Y') LIKE '%${keyword}%'`),
           literal(`DATE_FORMAT(recepcionDate, '%d/%m/%Y') LIKE '%${keyword}%'`),
@@ -651,9 +677,10 @@ export const getInventoriesBySearch = async (req, res) => {
       );
     }
 
+    const results = [...rows, ...advancedResults];
+
     res.json({
-      inventories: rows,
-      advancedResults,
+      inventories: results,
     });
   } catch (error) {
     console.log(error);
