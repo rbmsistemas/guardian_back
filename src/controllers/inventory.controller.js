@@ -378,7 +378,7 @@ export const getInventoriesByParams = async (req, res) => {
     orderBy,
     sort,
   } = req.body;
-  const resultsPerPage = parseInt(quantityResults) || 10;
+  const resultsPerPage = parseInt(quantityResults) || 100;
   let order = [["updatedAt", "DESC"]];
 
   try {
@@ -494,7 +494,8 @@ export const getInventoriesBySearch = async (req, res) => {
       });
     }
 
-    const normalizedSearch = await normalize(search.toLowerCase());
+    const normalizedSearch = encodeURIComponent(search.toLowerCase());
+    // const normalizedSearch = await normalize(search.toLowerCase());
 
     const keywords = normalizedSearch
       .split(/\s+/)
