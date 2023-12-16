@@ -494,8 +494,8 @@ export const getInventoriesBySearch = async (req, res) => {
       });
     }
 
-    const normalizedSearch = encodeURIComponent(search.toLowerCase());
-    // const normalizedSearch = await normalize(search.toLowerCase());
+    // const normalizedSearch = encodeURIComponent(search.toLowerCase());
+    const normalizedSearch = await normalize(search.toLowerCase());
 
     const keywords = normalizedSearch
       .split(/\s+/)
