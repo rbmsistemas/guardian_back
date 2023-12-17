@@ -679,7 +679,7 @@ export const getInventoriesBySearch = async (req, res) => {
     const results = [...rows, ...advancedResults];
 
     res.json({
-      inventories: results,
+      inventories: advancedResults ? results : rows,
     });
   } catch (error) {
     console.log(error);
