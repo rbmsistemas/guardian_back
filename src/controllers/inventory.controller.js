@@ -484,7 +484,7 @@ export const getInventoriesByParams = async (req, res) => {
 
 export const getInventoriesBySearch = async (req, res) => {
   const { search, advancedSearch } = req.body;
-  const resultsPerPage = 20;
+  const resultsPerPage = 50;
   let order = [["updatedAt", "DESC"]];
 
   try {
@@ -568,6 +568,7 @@ export const getInventoriesBySearch = async (req, res) => {
     const { rows } = await Inventory.findAndCountAll({
       where: whereClause,
       order: order,
+      limit: resultsPerPage,
       include: [
         {
           model: InventoryModel,
@@ -649,6 +650,7 @@ export const getInventoriesBySearch = async (req, res) => {
 
         const { rows } = await Inventory.findAndCountAll({
           where: whereClause,
+          limit: resultsPerPage,
           order: order,
           include: [
             {
