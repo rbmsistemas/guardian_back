@@ -10,6 +10,7 @@ import inventoryTypeRoutes from "./routes/inventoryType.routes.js";
 import inventoryBrand from "./routes/inventoryBrand.routes.js";
 import inventoryModel from "./routes/inventoryModel.routes.js";
 import inventoryField from "./routes/inventoryField.routes.js";
+import inventoryUploadFilesRoutes from "./routes/inventoryUploadFiles.routes.js";
 
 const app = express();
 
@@ -26,6 +27,7 @@ app.use("/api", inventoryBrand);
 app.use("/api", inventoryModel);
 app.use("/api", inventoryField);
 app.use("/api/uploads", uploadsInventoryRoutes);
+app.use("/api/uploads", inventoryUploadFilesRoutes);
 app.use("/api/uploads", uploadsRoutes);
 
 app.use((err, req, res, next) => {

@@ -14,6 +14,19 @@ const defaultDetails = [
   { key: "usuario", value: "" },
 ];
 
+const defaultFiles = [
+  {
+    title: "",
+    description: "",
+    file: {
+      fileName: "",
+      fileSize: "",
+      fileType: "",
+      filePath: "",
+    },
+  },
+];
+
 export const createInventory = async (req, res) => {
   try {
     if (
@@ -94,11 +107,12 @@ export const createInventory = async (req, res) => {
       bajaDate: req.body.bajaDate,
       recepcionDate: req.body.recepcionDate,
       details: req.body.details || defaultDetails,
+      files: req.body.files || defaultFiles,
       createdBy: user.userName,
     };
 
     const inventory = await Inventory.create(body);
-    // return the new inventory with model and brand and type data
+
     res.json({
       message: "Inventario creado correctamente",
       inventory: await Inventory.findOne({
@@ -206,6 +220,7 @@ export const updateInventoryById = async (req, res) => {
       bajaDate: req.body.bajaDate,
       recepcionDate: req.body.recepcionDate || null,
       details: req.body.details || defaultDetails,
+      files: req.body.files || defaultFiles,
     };
     await Inventory.update(body, {
       where: {
@@ -248,7 +263,7 @@ export const getValidateSerialNumber = async (req, res) => {
         ],
       },
     });
-    console.log(inventory);
+
     if (inventory) {
       res.json({
         message: "Serial Number ya existe",
@@ -268,6 +283,7 @@ export const getValidateSerialNumber = async (req, res) => {
     });
   }
 };
+
 export const getValidateActivo = async (req, res) => {
   const { activo, currentId } = req.body;
   try {
@@ -313,6 +329,16 @@ export const getInventories = async (req, res) => {
         {
           model: InventoryModel,
           as: "inventoryModel",
+          include: [
+            {
+              model: InventoryBrand,
+              as: "inventoryBrand",
+            },
+            {
+              model: InventoryType,
+              as: "inventoryType",
+            },
+          ],
         },
       ],
       order: [["updatedAt", "ASC"]],
@@ -404,11 +430,9 @@ export const getInventoriesByParams = async (req, res) => {
             [Op.like]: `%${search}%`,
           },
         },
-        {
-          details: {
-            [Op.like]: `%${search}%`,
-          },
-        },
+        literal(
+          `LOWER(JSON_EXTRACT(details, '$[*].value')) LIKE LOWER('%${search}%')`
+        ),
         {
           createdBy: {
             [Op.like]: `%${search}%`,
@@ -551,7 +575,7 @@ export const getInventoriesBySearch = async (req, res) => {
           },
         },
         literal(
-          `JSON_EXTRACT(details, '$[*].value') LIKE '%${normalizedSearch}%'`
+          `LOWER(JSON_EXTRACT(details, '$[*].value')) LIKE LOWER('%${normalizedSearch}%')`
         ),
         literal(
           `DATE_FORMAT(altaDate, '%d/%m/%Y') LIKE '%${normalizedSearch}%'`
@@ -632,7 +656,9 @@ export const getInventoriesBySearch = async (req, res) => {
               [Op.like]: `%${keyword}%`,
             },
           },
-          literal(`JSON_EXTRACT(details, '$[*].value') LIKE '%${keyword}%'`),
+          literal(
+            `LOWER(JSON_EXTRACT(details, '$[*].value')) LIKE LOWER('%${keyword}%')`
+          ),
           literal(`DATE_FORMAT(altaDate, '%d/%m/%Y') LIKE '%${keyword}%'`),
           literal(`DATE_FORMAT(bajaDate, '%d/%m/%Y') LIKE '%${keyword}%'`),
           literal(`DATE_FORMAT(recepcionDate, '%d/%m/%Y') LIKE '%${keyword}%'`),

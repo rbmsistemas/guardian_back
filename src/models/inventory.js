@@ -74,6 +74,22 @@ export default (sequelize, DataTypes) => {
         type: DataTypes.JSON,
         allowNull: true,
       },
+      files: {
+        type: DataTypes.JSON,
+        allowNull: false,
+        defaultValue: JSON.stringify([
+          {
+            title: "",
+            description: "",
+            file: {
+              fileName: "",
+              fileSize: "",
+              fileType: "",
+              filePath: "",
+            },
+          },
+        ]),
+      },
       altaDate: {
         type: DataTypes.DATE,
         allowNull: false,
