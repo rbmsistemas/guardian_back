@@ -380,6 +380,22 @@ export const getInventoryById = async (req, res) => {
       where: {
         id: req.params.id,
       },
+      include: [
+        {
+          model: InventoryModel,
+          as: "inventoryModel",
+          include: [
+            {
+              model: InventoryBrand,
+              as: "inventoryBrand",
+            },
+            {
+              model: InventoryType,
+              as: "inventoryType",
+            },
+          ],
+        },
+      ],
     });
     res.json({
       inventory,
