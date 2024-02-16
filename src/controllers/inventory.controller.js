@@ -1,5 +1,5 @@
 import db from "../models/index.js";
-import { Op, literal } from "sequelize";
+import { Op, literal, fn, col } from "sequelize";
 import { normalize } from "normalize-diacritics";
 
 const Inventory = db.Inventory;
@@ -341,7 +341,7 @@ export const getInventories = async (req, res) => {
           ],
         },
       ],
-      order: [["updatedAt", "ASC"]],
+      order: [["updatedAt", "DESC"]],
     });
     res.json({
       inventories,
@@ -405,7 +405,6 @@ export const getInventoriesByParams = async (req, res) => {
     sort,
   } = req.body;
   const resultsPerPage = parseInt(quantityResults) || 10;
-  let order = [["updatedAt", "DESC"]];
 
   try {
     let whereClause = {
@@ -459,32 +458,58 @@ export const getInventoriesByParams = async (req, res) => {
       };
     }
 
-    if (sort && orderBy) {
-      if (orderBy === "inventoryBrandId" || orderBy === "inventoryTypeId") {
-        order = [
-          [
-            {
-              model: InventoryModel,
-              as: "inventoryModel",
-            },
-            orderBy,
-            sort,
-          ],
-        ];
-      } else {
-        order = [[orderBy, sort]];
-      }
+    const validOrderByValues = ["inventoryBrandId", "inventoryTypeId"];
+    const orderByValue = validOrderByValues.includes(orderBy) ? orderBy : null;
+
+    // Construir la ordenación
+    let order = [];
+    if (orderByValue && sort) {
+      order.push([
+        { model: InventoryModel, as: "inventoryModel" },
+        {
+          model:
+            orderByValue === "inventoryBrandId"
+              ? InventoryBrand
+              : InventoryType,
+          as:
+            orderByValue === "inventoryBrandId"
+              ? "inventoryBrand"
+              : "inventoryType",
+        },
+        "name",
+        sort.toUpperCase(),
+      ]);
+    } else if (orderBy === "inventoryModelId" && sort) {
+      order.push([
+        { model: InventoryModel, as: "inventoryModel" },
+        "name",
+        sort.toUpperCase(),
+      ]);
+    } else if (orderBy && sort) {
+      order.push([orderBy, sort.toUpperCase()]);
+    } else {
+      order.push(["updatedAt", "DESC"]);
     }
 
     const { count, rows } = await Inventory.findAndCountAll({
       where: whereClause,
       limit: resultsPerPage,
       offset: (page - 1) * resultsPerPage,
-      order: order,
+      order,
       include: [
         {
           model: InventoryModel,
           as: "inventoryModel",
+          include: [
+            {
+              model: InventoryBrand,
+              as: "inventoryBrand",
+            },
+            {
+              model: InventoryType,
+              as: "inventoryType",
+            },
+          ],
         },
       ],
     });
@@ -492,8 +517,41 @@ export const getInventoriesByParams = async (req, res) => {
     const totalPages = Math.ceil(count / resultsPerPage);
     const totalEntries = count;
 
+    let formatedInventories = [];
+    for (let i = 0; i < rows.length; i++) {
+      const inventory = rows[i];
+      const inventoryModel = inventory.inventoryModel;
+      const inventoryBrand = inventoryModel.inventoryBrand;
+      const inventoryType = inventoryModel.inventoryType;
+      const inventoryDetails = inventory.details;
+      const inventoryFiles = inventory.files;
+      const inventoryCreatedBy = inventory.createdBy;
+      const inventoryCreatedAt = inventory.createdAt;
+      const inventoryUpdatedAt = inventory.updatedAt;
+
+      formatedInventories.push({
+        id: inventory.id,
+        tipo: inventoryType.name,
+        marca: inventoryBrand.name,
+        modelo: inventoryModel.name,
+        sn: inventory.serialNumber,
+        activo: inventory.activo,
+        status: inventory.status,
+        "fecha Alta": inventory.altaDate,
+        "fecha Baja": inventory.bajaDate,
+        "fecha Recepcion": inventory.recepcionDate,
+        detalles: inventoryDetails,
+        archivos: inventoryFiles || [defaultFiles],
+        comentarios: inventory.comments,
+        "creado cor": inventoryCreatedBy,
+        "fecha creacion": inventoryCreatedAt,
+        "fecha actualizacion": inventoryUpdatedAt,
+        imagenes: inventory.images || [],
+      });
+    }
+
     res.json({
-      inventories: rows,
+      inventories: formatedInventories,
       totalPages,
       totalEntries,
     });
@@ -801,6 +859,55 @@ export const getInventoryGroups = async (req, res) => {
 
     res.json({
       inventoryGroups: rows,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      message: "Error al obtener los detalles del inventario",
+      error,
+    });
+  }
+};
+
+// una peticion para conocer los modelos con mas stock por marca o tipo
+export const getInventoryModelsWithMostStock = async (req, res) => {
+  try {
+    let whereClause = {};
+    // add where clausule for status 0
+    whereClause = {
+      ...whereClause,
+      status: "1",
+    };
+
+    const { rows } = await Inventory.findAndCountAll({
+      where: whereClause,
+      attributes: [
+        "inventoryModelId",
+        [fn("COUNT", col("inventoryModelId")), "count"],
+      ],
+      group: ["inventoryModelId"],
+      include: [
+        {
+          model: InventoryModel,
+          as: "inventoryModel",
+          include: [
+            {
+              model: InventoryBrand,
+              as: "inventoryBrand",
+            },
+            {
+              model: InventoryType,
+              as: "inventoryType",
+            },
+          ],
+        },
+      ],
+      order: [[literal("count"), "DESC"]],
+      limit: 10,
+    });
+    console.log(rows);
+    res.json({
+      inventories: rows,
     });
   } catch (error) {
     console.log(error);

@@ -11,6 +11,7 @@ import {
   getValidateActivo,
   getInventoriesBySearch,
   getInventoryGroups,
+  getInventoryModelsWithMostStock,
 } from "../controllers/inventory.controller.js";
 import { verifyToken } from "../middleware/index.js";
 import ping from "ping";
@@ -32,6 +33,11 @@ router.delete("/inventories/:id", verifyToken, deleteInventoryById);
 router.post("/inventories/params", verifyToken, getInventoriesByParams);
 router.post("/inventories/search", verifyToken, getInventoriesBySearch);
 router.post("/inventories/groups", verifyToken, getInventoryGroups);
+router.post(
+  "/inventories/models-stock",
+  verifyToken,
+  getInventoryModelsWithMostStock
+);
 
 router.post("/inventories/ping", async (req, res) => {
   const { ipAddress } = req.body;
