@@ -44,7 +44,7 @@ const upload = multer({
 });
 
 // Ruta para la carga de archivos
-router.post("/inventory", upload.single("file"), function (req, res) {
+router.post("/inventory/file", upload.single("file"), function (req, res) {
   // Verificar si se recibió un archivo
   if (!req.file) {
     return res.status(400).send("No se encontró ningún archivo");

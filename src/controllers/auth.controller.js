@@ -155,18 +155,18 @@ export const getAllUsers = async (req, res) => {
       ],
     });
 
-    const inventories = await Inventory.findAll({
+    const inventoriesCount = await Inventory.count({
       where: {
         createdAt: {
           [Op.gte]: new Date(new Date() - frequency * 24 * 60 * 60 * 1000),
         },
       },
+      group: ["userId"],
     });
 
     const users = allUsers.map((user) => {
-      const inventory = inventories.filter(
-        (inventory) => inventory.userId === user.id
-      );
+      const inventoryCount =
+        inventoriesCount.find((count) => count.userId === user.id) || 0;
 
       return {
         id: user.id,
@@ -181,7 +181,7 @@ export const getAllUsers = async (req, res) => {
         updatedAt: user.updatedAt,
         status: user.status,
         company: user.company,
-        inventory: inventory.length,
+        inventory: inventoryCount?.count || 0,
       };
     });
 

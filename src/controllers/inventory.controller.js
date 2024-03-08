@@ -267,12 +267,12 @@ export const getValidateSerialNumber = async (req, res) => {
     if (inventory) {
       res.json({
         message: "Serial Number ya existe",
-        status: false,
+        status: true,
       });
     } else {
       res.json({
         message: "Serial Number no existe",
-        status: true,
+        status: false,
       });
     }
   } catch (error) {
@@ -921,7 +921,6 @@ export const getInventoryModelsWithMostStock = async (req, res) => {
       order: [[literal("count"), "DESC"]],
       limit: 10,
     });
-    console.log(rows);
     res.json({
       inventories: rows,
     });
