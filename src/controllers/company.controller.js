@@ -102,7 +102,7 @@ export const deleteCompanyById = async (req, res) => {
 
 export const getCompaniesByParams = async (req, res) => {
   const { search, status, page, quantityResults } = req.body;
-  const resultsPerPage = parseInt(quantityResults) || 5;
+  const resultsPerPage = parseInt(quantityResults)?? 5;
 
   try {
     let whereClause = {

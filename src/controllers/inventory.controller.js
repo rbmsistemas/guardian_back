@@ -106,8 +106,8 @@ export const createInventory = async (req, res) => {
       altaDate: req.body.altaDate,
       bajaDate: req.body.bajaDate,
       recepcionDate: req.body.recepcionDate,
-      details: req.body.details || defaultDetails,
-      files: req.body.files || defaultFiles,
+      details: req.body.details ?? defaultDetails,
+      files: req.body.files ?? defaultFiles,
       createdBy: user.userName,
     };
 
@@ -142,7 +142,7 @@ export const createInventory = async (req, res) => {
     console.log(error);
     res.status(500).json({
       message: "Error al crear el inventorio",
-      error: error?.errors[0]?.message || error,
+      error: error?.errors[0]?.message ?? error,
     });
   }
 };
@@ -218,9 +218,9 @@ export const updateInventoryById = async (req, res) => {
       images: req.body.images,
       altaDate: req.body.altaDate,
       bajaDate: req.body.bajaDate,
-      recepcionDate: req.body.recepcionDate || null,
-      details: req.body.details || defaultDetails,
-      files: req.body.files || defaultFiles,
+      recepcionDate: req.body.recepcionDate ? new Date(req.body.recepcionDate) : null,
+      details: req.body.details ?? defaultDetails,
+      files: req.body.files ?? defaultFiles,
     };
     await Inventory.update(body, {
       where: {
@@ -420,7 +420,7 @@ export const getInventoriesByParams = async (req, res) => {
     orderBy,
     sort,
   } = req.body;
-  const resultsPerPage = parseInt(quantityResults) || 10;
+  const resultsPerPage = parseInt(quantityResults) ?? 10;
 
   try {
     let whereClause = {
@@ -557,12 +557,12 @@ export const getInventoriesByParams = async (req, res) => {
         "fecha Baja": inventory.bajaDate,
         "fecha Recepcion": inventory.recepcionDate,
         detalles: inventoryDetails,
-        archivos: inventoryFiles || [defaultFiles],
+        archivos: inventoryFiles ?? [defaultFiles],
         comentarios: inventory.comments,
         "creado cor": inventoryCreatedBy,
         "fecha creacion": inventoryCreatedAt,
         "fecha actualizacion": inventoryUpdatedAt,
-        imagenes: inventory.images || [],
+        imagenes: inventory.images ?? [],
       });
     }
 

@@ -37,7 +37,7 @@ export const signIn = async (req, res) => {
       });
     }
 
-    const user = email || userName;
+    const user = email ?? userName;
 
     const validPassword = await User.validatePassword(
       req.body.password,
@@ -61,7 +61,7 @@ export const signIn = async (req, res) => {
         phone: user.phone,
         userName: user.userName,
         rol: user.rol,
-        photo: user.photos || null,
+        photo: user.photos ?? null,
         createdAt: user.createdAt,
         updatedAt: user.updatedAt,
         status: user.status,
@@ -123,7 +123,7 @@ export const logout = async (req, res) => {
 
 export const getAllUsers = async (req, res) => {
   try {
-    const frequency = req.params.time || 7;
+    const frequency = req.params.time ?? 7;
     const user = await User.findByPk(req.userId);
 
     if (!user) {
@@ -166,7 +166,7 @@ export const getAllUsers = async (req, res) => {
 
     const users = allUsers.map((user) => {
       const inventoryCount =
-        inventoriesCount.find((count) => count.userId === user.id) || 0;
+        inventoriesCount.find((count) => count.userId === user.id) ?? 0;
 
       return {
         id: user.id,
@@ -176,12 +176,12 @@ export const getAllUsers = async (req, res) => {
         phone: user.phone,
         userName: user.userName,
         rol: user.rol,
-        photo: user.photos || null,
+        photo: user.photos ?? null,
         createdAt: user.createdAt,
         updatedAt: user.updatedAt,
         status: user.status,
         company: user.company,
-        inventory: inventoryCount?.count || 0,
+        inventory: inventoryCount?.count ?? 0,
       };
     });
 
