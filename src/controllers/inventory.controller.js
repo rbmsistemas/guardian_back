@@ -105,7 +105,9 @@ export const createInventory = async (req, res) => {
       images: req.body.images,
       altaDate: req.body.altaDate,
       bajaDate: req.body.bajaDate,
-      recepcionDate: req.body.recepcionDate,
+      recepcionDate: req.body.recepcionDate
+        ? new Date(req.body.recepcionDate)
+        : null,
       details: req.body.details ?? defaultDetails,
       files: req.body.files ?? defaultFiles,
       createdBy: user.userName,
@@ -193,7 +195,7 @@ export const updateInventoryById = async (req, res) => {
       req.body?.details?.map(async (detail) => {
         const inventoryField = await db.InventoryField.findOne({
           where: {
-            name: detail.key,
+            name: detail?.key,
           },
         });
 
@@ -208,7 +210,6 @@ export const updateInventoryById = async (req, res) => {
     );
 
     const inventoryFields = await db.InventoryField.findAll();
-
     let body = {
       inventoryModelId: req.body.inventoryModelId,
       serialNumber: req.body.serialNumber,
@@ -218,7 +219,9 @@ export const updateInventoryById = async (req, res) => {
       images: req.body.images,
       altaDate: req.body.altaDate,
       bajaDate: req.body.bajaDate,
-      recepcionDate: req.body.recepcionDate ? new Date(req.body.recepcionDate) : null,
+      recepcionDate: req.body.recepcionDate
+        ? new Date(req.body.recepcionDate)
+        : null,
       details: req.body.details ?? defaultDetails,
       files: req.body.files ?? defaultFiles,
     };
@@ -234,6 +237,22 @@ export const updateInventoryById = async (req, res) => {
         where: {
           id: req.params.id,
         },
+        include: [
+          {
+            model: InventoryModel,
+            as: "inventoryModel",
+            include: [
+              {
+                model: InventoryBrand,
+                as: "inventoryBrand",
+              },
+              {
+                model: InventoryType,
+                as: "inventoryType",
+              },
+            ],
+          },
+        ],
       }),
       inventoryFields,
     });

@@ -4,6 +4,7 @@ const InventoryModel = db.InventoryModel;
 const Inventory = db.Inventory;
 const InventoryType = db.InventoryType;
 const InventoryBrand = db.InventoryBrand;
+import { Op, literal, fn, col } from "sequelize";
 
 export const getInventoryModels = async (req, res) => {
   try {
@@ -34,8 +35,8 @@ export const getInventoryModels = async (req, res) => {
 
 export const getInventoryModelsByParams = async (req, res) => {
   const {
-    inventoryTypeId,
-    inventoryBrandId,
+    inventoryType,
+    inventoryBrand,
     search,
     page,
     quantityResults,
@@ -44,35 +45,45 @@ export const getInventoryModelsByParams = async (req, res) => {
   } = req.body;
 
   try {
+    const resultsPerPage = parseInt(quantityResults) ?? 10;
     let where = {};
-    if (inventoryTypeId) where.inventoryTypeId = inventoryTypeId;
-    if (inventoryBrandId) where.inventoryBrandId = inventoryBrandId;
-    if (search) where.name = search;
+    if (inventoryType) where.inventoryTypeId = inventoryType;
+    if (inventoryBrand) where.inventoryBrandId = inventoryBrand;
+    if (search) where.name = { [Op.like]: `%${search}%` };
 
-    let order = [["name", "ASC"]]; // Default sorting
+    const validOrderByValues = [
+      "inventoryBrandId",
+      "inventoryTypeId",
+      "inventoriesCount",
+    ];
+    const orderByValue = validOrderByValues.includes(orderBy) ? orderBy : null;
 
-    if (orderBy && sort) {
-      if (orderBy === "name") {
-        order = [["name", sort]];
-      } else if (orderBy === "inventoryTypeId") {
-        order = [[{ model: InventoryType, as: "inventoryType" }, "name", sort]];
-      } else if (orderBy === "inventoryBrandId") {
-        order = [
-          [{ model: InventoryBrand, as: "inventoryBrand" }, "name", sort],
-        ];
+    let order = [];
+    if (orderByValue && sort) {
+      if (orderByValue === "inventoryBrandId") {
+        order.push([
+          { model: InventoryBrand, as: "inventoryBrand" },
+          "name",
+          sort,
+        ]);
+      } else if (orderByValue === "inventoryTypeId") {
+        order.push([
+          { model: InventoryType, as: "inventoryType" },
+          "name",
+          sort,
+        ]);
+      } else if (orderByValue === "inventoriesCount") {
+        order.push([literal(`inventoriesCount`), sort]);
       }
-
-      // Additional debug logs
-      console.log("orderBy:", orderBy);
-      console.log("sort:", sort);
-      console.log("order:", order);
+    } else {
+      order.push(["updatedAt", sort ?? "DESC"]);
     }
 
-    const inventoryModels = await InventoryModel.findAll({
+    const { count, rows } = await InventoryModel.findAndCountAll({
       where,
       order,
-      offset: page * quantityResults,
-      limit: quantityResults,
+      offset: page * resultsPerPage,
+      limit: resultsPerPage,
       include: [
         {
           model: InventoryType,
@@ -83,14 +94,24 @@ export const getInventoryModelsByParams = async (req, res) => {
           as: "inventoryBrand",
         },
       ],
+      attributes: {
+        include: [
+          [
+            literal(
+              `(SELECT COUNT(*) FROM Inventory WHERE Inventory.inventoryModelId = InventoryModel.id)`
+            ),
+            "inventoriesCount",
+          ],
+        ],
+      },
     });
 
-    const totalResults = await InventoryModel.count({ where });
-    const totalPages = Math.ceil(totalResults / quantityResults);
+    const totalPages = Math.ceil(count / resultsPerPage);
+    const totalEntries = count;
     res.json({
-      inventoryModels,
-      totalResults,
+      inventoryModels: rows,
       totalPages,
+      totalEntries,
     });
   } catch (error) {
     console.log(error);
@@ -137,8 +158,9 @@ export const updateInventoryModel = async (req, res) => {
   }
 };
 
-export const getInventoryModelById = async (id) => {
+export const getInventoryModelById = async (req, res) => {
   try {
+    const id = req.params.id;
     const inventoryModel = await InventoryModel.findByPk(id, {
       include: [
         {
@@ -149,17 +171,61 @@ export const getInventoryModelById = async (id) => {
           model: InventoryBrand,
           as: "inventoryBrand",
         },
+        {
+          model: Inventory, // Incluir el modelo de inventario
+          as: "inventoryModel", // Asignar un alias para referenciarlo
+          include: [
+            {
+              model: InventoryModel,
+              as: "inventoryModel",
+              include: [
+                {
+                  model: InventoryBrand,
+                  as: "inventoryBrand",
+                },
+                {
+                  model: InventoryType,
+                  as: "inventoryType",
+                },
+              ],
+            },
+          ],
+        },
       ],
-    });
-
-    const inventories = await Inventory.findAll({
-      where: {
-        inventoryModelId: id,
+      attributes: {
+        include: [
+          [
+            literal(
+              `(SELECT COUNT(*) FROM Inventory WHERE Inventory.inventoryModelId = InventoryModel.id)`
+            ),
+            "inventoriesCount",
+          ],
+          [
+            literal(
+              `(SELECT COUNT(*) FROM Inventory WHERE Inventory.inventoryModelId = InventoryModel.id AND Inventory.status = '1')`
+            ),
+            "altaCount",
+          ],
+          [
+            literal(
+              `(SELECT COUNT(*) FROM Inventory WHERE Inventory.inventoryModelId = InventoryModel.id AND Inventory.status = '2')`
+            ),
+            "propuestaCount",
+          ],
+          [
+            literal(
+              `(SELECT COUNT(*) FROM Inventory WHERE Inventory.inventoryModelId = InventoryModel.id AND Inventory.status = '3')`
+            ),
+            "bajaCount",
+          ],
+        ],
       },
     });
-    return { inventoryModel, inventories };
+    res.json({
+      inventoryModel,
+    });
   } catch (error) {
     console.log(error);
-    return error;
+    throw error;
   }
 };
