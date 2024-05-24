@@ -210,6 +210,7 @@ export const updateInventoryById = async (req, res) => {
     );
 
     const inventoryFields = await db.InventoryField.findAll();
+
     let body = {
       inventoryModelId: req.body.inventoryModelId,
       serialNumber: req.body.serialNumber,
@@ -220,11 +221,25 @@ export const updateInventoryById = async (req, res) => {
       altaDate: req.body.altaDate,
       bajaDate: req.body.bajaDate,
       recepcionDate: req.body.recepcionDate
-        ? new Date(req.body.recepcionDate)
+        ? parseAndValidateDate(req.body.recepcionDate)
         : null,
       details: req.body.details ?? defaultDetails,
       files: req.body.files ?? defaultFiles,
     };
+
+    function parseAndValidateDate(dateString) {
+      const regex = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/;
+      if (!regex.test(dateString)) {
+        if (dateString === "") {
+          return null;
+        } else {
+          return dateString;
+        }
+      }
+
+      return new Date(dateString);
+    }
+
     await Inventory.update(body, {
       where: {
         id: req.params.id,
