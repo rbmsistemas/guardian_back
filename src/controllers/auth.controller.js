@@ -49,7 +49,8 @@ export const signIn = async (req, res) => {
         message: "Contraseña incorrecta",
       });
     }
-    const token = await User.generateToken(user, req.params.remember);
+    console.log(req.body);
+    const token = await User.generateToken(user, req.body.remember);
 
     res.json({
       token,
